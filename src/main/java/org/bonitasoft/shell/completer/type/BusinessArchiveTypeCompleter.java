@@ -12,6 +12,7 @@ import java.util.List;
 public class BusinessArchiveTypeCompleter implements BonitaCompleter {
     @Override
     public int complete(ArgumentParser commandLine, List<CharSequence> candidates) {
+
         return 0;
     }
 
