@@ -1,4 +1,6 @@
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.reflect;
+
+import org.bonitasoft.shell.completer.ArgumentParser;
 
 /**
  * Created by baptiste on 08/07/14.

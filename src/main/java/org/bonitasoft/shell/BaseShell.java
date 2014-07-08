@@ -24,7 +24,7 @@ import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.CommandArgumentsCompleter;
-import org.bonitasoft.shell.completer.ReflectCandidateListCompletionHandler;
+import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHandler;
 
 /**
  * A basic shell

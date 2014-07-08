@@ -1,6 +1,10 @@
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.reflect;
 
 import org.bonitasoft.shell.command.ReflectCommand;
+import org.bonitasoft.shell.completer.ArgumentParser;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.CompletionHelper;
+import org.bonitasoft.shell.completer.type.TypeCompleters;
 
 import java.util.List;
 

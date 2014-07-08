@@ -18,7 +18,6 @@ package org.bonitasoft.shell.command;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,8 +29,8 @@ import java.util.Map;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodArgumentCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodCompleter;
+import org.bonitasoft.shell.completer.reflect.ReflectMethodArgumentCompleter;
+import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
 
 /**
  * @author Baptiste Mesta

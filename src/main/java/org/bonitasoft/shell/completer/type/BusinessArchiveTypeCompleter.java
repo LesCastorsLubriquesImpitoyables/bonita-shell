@@ -1,4 +1,8 @@
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.type;
+
+import org.bonitasoft.shell.completer.ArgumentParser;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.CompletionHelper;
 
 import java.util.List;
 

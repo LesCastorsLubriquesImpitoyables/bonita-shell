@@ -1,4 +1,4 @@
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.reflect;
 
 import java.io.IOException;
 import java.util.Iterator;

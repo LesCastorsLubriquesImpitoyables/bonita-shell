@@ -1,6 +1,8 @@
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.type;
 
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 
 import java.util.HashMap;
 import java.util.Map;
