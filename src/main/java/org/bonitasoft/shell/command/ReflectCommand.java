@@ -34,7 +34,6 @@ import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
 
 /**
  * @author Baptiste Mesta
- * 
  */
 public class ReflectCommand extends ShellCommand {
 
@@ -182,19 +181,21 @@ public class ReflectCommand extends ShellCommand {
         return null;
     }
 
-
-    public Class<?> getArgumentType(String methodName, int index){
+    public List<Class<?>> getArgumentType(String methodName, int index) {
         List<Method> methods = methodMap.get(methodName);
-        //FIXME get the best match
-        if(methods == null){
+        if (methods == null) {
             return null;
         }
-        Method method = methods.get(0);
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        if(index>=parameterTypes.length){
-            return null;
+
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        for (Method method : methods) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            if (index < parameterTypes.length) {
+                classes.add(parameterTypes[index]);
+            }
         }
-        return parameterTypes[index];
+
+        return classes;
     }
 
 }

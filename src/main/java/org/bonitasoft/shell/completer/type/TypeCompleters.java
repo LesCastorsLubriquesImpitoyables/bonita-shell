@@ -5,6 +5,7 @@ import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +22,14 @@ public class TypeCompleters {
     }
 
 
-    public static BonitaCompleter getCompleter(Class<?> type) {
-        return completers.get(type);
+    public static BonitaCompleter getCompleter(List<Class<?>> type) {
+        for (Class<?> aClass : type) {
+            if(completers.containsKey(aClass)){
+                return completers.get(aClass);
+            }
+        }
+        return null;
     }
+
+    
 }
