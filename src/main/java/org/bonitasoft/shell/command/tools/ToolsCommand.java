@@ -29,7 +29,15 @@ public class ToolsCommand extends ShellCommand {
 
     @Override
     public boolean execute(List<String> args, ShellContext context) throws Exception {
-        // TODO Auto-generated method stub
+        switch (args.get(0)) {
+            case ReplayFailedTaskCommand.COMMAND_NAME:
+                (new ReplayFailedTaskCommand()).execute(args.subList(1, args.size()), context);
+                break;
+
+            default:
+                throw new Exception("Unknown tools sub commande: " + args.get(0));
+        }
+
         return false;
     }
 

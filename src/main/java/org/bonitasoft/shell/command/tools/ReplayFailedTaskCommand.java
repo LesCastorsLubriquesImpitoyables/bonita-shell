@@ -2,6 +2,7 @@ package org.bonitasoft.shell.command.tools;
 
 import java.util.List;
 
+import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 
@@ -17,7 +18,8 @@ public class ReplayFailedTaskCommand extends ShellCommand {
 
     @Override
     public boolean execute(List<String> args, ShellContext context) throws Exception {
-        // TODO Auto-generated method stub
+        ProcessAPI processAPI = context.getProcessAPI();
+
         return false;
     }
 

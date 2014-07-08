@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import org.bonitasoft.engine.BonitaShellContext;
+import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class LoginCommandTest {
 
     @Mock
-    private BonitaShellContext context;
+    private ShellContext context;
 
     private LoginCommand loginCommand;
 

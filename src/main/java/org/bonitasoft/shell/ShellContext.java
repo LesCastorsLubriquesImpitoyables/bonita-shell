@@ -6,17 +6,88 @@
  */
 package org.bonitasoft.shell;
 
+import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.LoginAPI;
+import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.ProfileAPI;
+import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.session.APISession;
+
 /**
  * @author Baptiste Mesta
  */
-public interface ShellContext {
+public class ShellContext {
 
-    boolean isLogged();
+    private static ShellContext INSTANCE = new ShellContext();
 
-    void logout() throws Exception;
+    public static ShellContext getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ShellContext();
+        }
+        return INSTANCE;
+    }
 
-    void login(String username, String password) throws Exception;
+    private ShellContext() {
+    }
 
-    Object getApi(String apiName) throws Exception;
+    private LoginAPI loginAPI;
+
+    private APISession session;
+
+    // ------------------ Tenant ------------------------
+    /**
+     * @return
+     */
+    public boolean isLogged() {
+        return session != null;
+    }
+
+    public void logout() throws Exception {
+        loginAPI.logout(session);
+        loginAPI = null;
+        session = null;
+    }
+
+    /**
+     * @param tenant
+     * @param username
+     * @param password
+     */
+    public void login(final String username, final String password) throws Exception {
+        loginAPI = TenantAPIAccessor.getLoginAPI();
+        session = loginAPI.login(username, password);
+    }
+
+    public IdentityAPI getIdentityAPI() throws BonitaException {
+        return TenantAPIAccessor.getIdentityAPI(session);
+
+    }
+
+    public ProcessAPI getProcessAPI() throws BonitaException {
+        return TenantAPIAccessor.getProcessAPI(session);
+    }
+
+    public ProfileAPI getProfileAPI() throws BonitaException {
+        return TenantAPIAccessor.getProfileAPI(session);
+    }
+
+    public APISession getSession() {
+        return session;
+    }
+
+    @Deprecated
+    public Object getApi(final String apiName) throws Exception {
+        if (apiName.equals("process")) {
+            return getProcessAPI();
+        }
+        if (apiName.equals("identity")) {
+            return getIdentityAPI();
+        }
+        if (apiName.equals("profile")) {
+            return getProfileAPI();
+        }
+        throw new IllegalArgumentException("Unknown API: " + apiName);
+    }
 
 }

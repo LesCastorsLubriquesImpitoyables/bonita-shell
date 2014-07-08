@@ -48,7 +48,7 @@ public abstract class BaseShell {
 
     public void init() throws Exception {
         final List<ShellCommand> commandList = initShellCommands();
-        commands = new HashMap<String, ShellCommand>();
+        commands = new HashMap<>();
         for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
@@ -140,7 +140,7 @@ public abstract class BaseShell {
             final String string = asList.get(i);
             asList.set(i, string.replaceAll("%SPACE%", " "));
         }
-        return new ArrayList<String>(asList);
+        return new ArrayList<>(asList);
     }
 
     protected void initHome() throws IOException {

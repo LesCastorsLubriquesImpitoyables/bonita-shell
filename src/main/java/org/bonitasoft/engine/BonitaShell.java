@@ -27,12 +27,12 @@ public class BonitaShell extends BaseShell {
 
     @Override
     protected ShellContext getContext() {
-        return BonitaShellContext.getInstance();
+        return ShellContext.getInstance();
     }
 
     @Override
     protected List<ShellCommand> initShellCommands() throws Exception {
-        ArrayList<ShellCommand> commands = new ArrayList<ShellCommand>(4);
+        ArrayList<ShellCommand> commands = new ArrayList<>(4);
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
         commands.add(new ReflectCommand("process", ProcessAPI.class));
