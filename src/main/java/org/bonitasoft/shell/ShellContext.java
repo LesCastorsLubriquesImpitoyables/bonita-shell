@@ -6,13 +6,14 @@
  */
 package org.bonitasoft.shell;
 
-import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.LoginAPI;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
-import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
+
+import com.bonitasoft.engine.api.IdentityAPI;
+import com.bonitasoft.engine.api.LoginAPI;
+import com.bonitasoft.engine.api.ProcessAPI;
+import com.bonitasoft.engine.api.ProfileAPI;
+import com.bonitasoft.engine.api.TenantAPIAccessor;
 
 /**
  * @author Baptiste Mesta
