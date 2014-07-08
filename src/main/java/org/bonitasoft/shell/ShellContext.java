@@ -91,4 +91,10 @@ public class ShellContext {
         throw new IllegalArgumentException("Unknown API: " + apiName);
     }
 
+    public String getLoggedUser() {
+        if(isLogged()) {
+            return session.getUserName();
+        }
+        return "bonita";
+    }
 }

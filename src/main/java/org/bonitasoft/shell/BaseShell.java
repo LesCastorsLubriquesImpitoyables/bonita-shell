@@ -186,7 +186,7 @@ public abstract class BaseShell {
     }
 
     protected String getPrompt() {
-        return PROMPT;
+        return getContext().getLoggedUser() + "@" + PROMPT;
     }
 
     protected void printWelcomeMessage() {
