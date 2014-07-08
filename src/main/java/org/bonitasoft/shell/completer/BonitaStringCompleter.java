@@ -17,4 +17,9 @@ public class BonitaStringCompleter extends StringsCompleter implements BonitaCom
         String lastArgument = commandLine.getLastArgument();
         return complete(lastArgument,lastArgument.length(), candidates);
     }
+
+    @Override
+    public CompletionHelper getCompletionHelper() {
+        return null;
+    }
 }

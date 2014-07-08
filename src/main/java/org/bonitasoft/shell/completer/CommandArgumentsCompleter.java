@@ -14,7 +14,6 @@ import java.util.List;
 import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
 
-import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 
 /**
@@ -57,14 +56,14 @@ public class CommandArgumentsCompleter implements Completer {
                     final List<BonitaCompleter> completers = clientCommand.getCompleters();
                     if (completers.size() > lastArgumentIndex) {
                         final BonitaCompleter completer = completers.get(lastArgumentIndex);
-                        final String lastArgument = argumentParser.getLastArgument();
-                        String previousArgument = argumentParser.getPreviousArgument();
-                        final int complete;
-                        if (lastArgument == null || lastArgument.isEmpty() && previousArgument != null) {
-                            complete = completer.complete(argumentParser, candidates);
-                        } else {
-                            complete = completer.complete(argumentParser, candidates);
+                        if(argumentParser.isLastArgumentCompleted()){
+
+                            CompletionHelper completionHelper = completer.getCompletionHelper();
+                            if(completionHelper != null){
+                                completionHelper.printHelp(argumentParser.getLastArgument());
+                            }
                         }
+                        final int complete = completer.complete(argumentParser, candidates);
                         return complete + argumentParser.getOffset();
                     }
                 }

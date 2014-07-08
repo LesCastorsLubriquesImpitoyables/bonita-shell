@@ -19,6 +19,8 @@ public class ArgumentParser {
 
     private final String original;
 
+    private boolean completed = false;
+
     private List<String> arguments;
 
     private String command;
@@ -36,7 +38,7 @@ public class ArgumentParser {
         original = string;
         final List<String> list = new ArrayList<String>(Arrays.asList(string.split("(\\s)+")));
         if (" ".equals(original.substring(original.length() - 1, original.length()))) {
-            list.add("");
+            completed = true;
         }
         if (list.size() > 0) {
             command = list.get(0);
@@ -71,11 +73,19 @@ public class ArgumentParser {
         return arguments.size() - 1;
     }
 
+    public boolean isLastArgumentCompleted(){
+        return completed;
+    }
+
     public int getOffset() {
         return offset;
     }
 
     public String getPreviousArgument() {
         return previousArgument;
+    }
+
+    public String getArgumentAt(int index) {
+        return arguments.get(index);
     }
 }

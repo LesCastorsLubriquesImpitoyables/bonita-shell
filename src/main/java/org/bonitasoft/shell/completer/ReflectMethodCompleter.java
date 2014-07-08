@@ -36,4 +36,9 @@ public class ReflectMethodCompleter extends ResolvingStringsCompleter {
         return command.getMethodNames();
     }
 
+
+    public CompletionHelper getCompletionHelper(){
+        return new ReflectMethodCompletionHelper(command);
+    }
+
 }

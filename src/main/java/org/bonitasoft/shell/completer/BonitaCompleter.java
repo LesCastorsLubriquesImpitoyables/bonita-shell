@@ -10,5 +10,7 @@ public interface BonitaCompleter {
 
         int complete(ArgumentParser commandLine, List<CharSequence> candidates);
 
+    public CompletionHelper getCompletionHelper();
+
 
 }

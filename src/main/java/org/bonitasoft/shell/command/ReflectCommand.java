@@ -18,6 +18,7 @@ package org.bonitasoft.shell.command;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,14 +27,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import jline.console.completer.Completer;
-
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.ReflectMethodArgumentCompleter;
 import org.bonitasoft.shell.completer.ReflectMethodCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodHelpCompleter;
 
 /**
  * @author Baptiste Mesta
@@ -155,7 +153,7 @@ public class ReflectCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.<BonitaCompleter> asList(new ReflectMethodCompleter(this), new ReflectMethodHelpCompleter(this), new ReflectMethodArgumentCompleter(this));
+        return Arrays.<BonitaCompleter> asList(new ReflectMethodCompleter(this), new ReflectMethodArgumentCompleter(this));
     }
 
     /**
@@ -184,4 +182,20 @@ public class ReflectCommand extends ShellCommand {
         }
         return null;
     }
+
+
+    public Class<?> getArgumentType(String methodName, int index){
+        List<Method> methods = methodMap.get(methodName);
+        //FIXME get the best match
+        if(methods == null){
+            return null;
+        }
+        Method method = methods.get(0);
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if(index>=parameterTypes.length){
+            return null;
+        }
+        return parameterTypes[index];
+    }
+
 }

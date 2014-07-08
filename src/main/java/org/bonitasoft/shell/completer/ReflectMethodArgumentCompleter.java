@@ -9,14 +9,31 @@ import java.util.List;
  */
 public class ReflectMethodArgumentCompleter implements BonitaCompleter {
 
+    private ReflectCommand command;
+
     public ReflectMethodArgumentCompleter(ReflectCommand command) {
+        this.command = command;
     }
 
 
     @Override
     public int complete(ArgumentParser commandLine, List<CharSequence> candidates) {
 
-        return 0;
+        ReflectMethodArgumentParser parser = new ReflectMethodArgumentParser(commandLine);
+
+        String methodName = parser.getMethodName();
+        int index = parser.getArgumentIndex();
+
+        Class<?> type = command.getArgumentType(methodName,index);
+
+        BonitaCompleter typeCompleter = TypeCompleters.getCompleter(type);
+
+        return typeCompleter.complete(commandLine, candidates);
+    }
+
+    @Override
+    public CompletionHelper getCompletionHelper() {
+        return null;
     }
 }
 
