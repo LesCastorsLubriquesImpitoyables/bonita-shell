@@ -15,17 +15,24 @@ import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
+import org.bonitasoft.shell.completer.BonitaCompleter;
 
 import com.bonitasoft.engine.api.ProcessAPI;
 
+/**
+ * All connectors and tasks are replayed.
+ * On large number of available tasks or consuming connector it might impact temporarly the Engine performance.
+ * 
+ * @author Christophe Gomes
+ * @author Antoine Mottier
+ */
 public class ReplayFailedTaskCommand extends ShellCommand {
 
     public static final String COMMAND_NAME = "replay_failed_task";
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return COMMAND_NAME;
     }
 
     @Override
@@ -34,7 +41,7 @@ public class ReplayFailedTaskCommand extends ShellCommand {
 
         // Search all failed connectors and flag them to be replayed 
         SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
-        searchOptionsBuilder.filter(ConnectorInstancesSearchDescriptor.STATE, ConnectorState.FAILED);
+        searchOptionsBuilder.filter(ConnectorInstancesSearchDescriptor.STATE, ConnectorState.FAILED.name());
         SearchResult<ConnectorInstance> searchConnectorInstances = processAPI.searchConnectorInstances(searchOptionsBuilder.done());
         List<ConnectorInstance> connectorInstances = searchConnectorInstances.getResult();
 
@@ -53,19 +60,23 @@ public class ReplayFailedTaskCommand extends ShellCommand {
             processAPI.replayActivity(activityInstance.getId());
         }
 
-        return false;
+        return true;
+    }
+
+    @Override
+    public List<BonitaCompleter> getCompleters() {
+        return super.getCompleters();
     }
 
     @Override
     public void printHelp() {
-        // TODO Auto-generated method stub
+        System.out.println("No args");
 
     }
 
     @Override
     public boolean validate(List<String> args) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
 }

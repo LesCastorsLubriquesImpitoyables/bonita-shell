@@ -12,6 +12,7 @@ import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ReflectCommand;
 import org.bonitasoft.shell.command.ShellCommand;
+import org.bonitasoft.shell.command.tools.ReplayFailedTaskCommand;
 
 public class BonitaShell extends BaseShell {
 
@@ -38,6 +39,7 @@ public class BonitaShell extends BaseShell {
         commands.add(new ReflectCommand("process", ProcessAPI.class));
         commands.add(new ReflectCommand("identity", IdentityAPI.class));
         commands.add(new ReflectCommand("profile", ProfileAPI.class));
+        commands.add(new ReplayFailedTaskCommand());
         return commands;
         // return Arrays.asList(createCommand(LoginCommand.class), createCommand(LogoutCommand.class), createCommand(DeployOrganisationCommand.class),
         // createCommand(CreateGroupCommand.class),
