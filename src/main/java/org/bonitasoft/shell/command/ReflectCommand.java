@@ -26,11 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.reflect.ReflectMethodArgumentCompleter;
 import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
+import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 
 /**
  * @author Baptiste Mesta
@@ -119,6 +121,9 @@ public class ReflectCommand extends ShellCommand {
                 casted = Integer.parseInt(parameter);
             } else if (String.class.getName().equals(parameterClass)) {
                 casted = parameter;
+            } else if (BusinessArchive.class.getName().equals(parameterClass)) {
+                    casted = new BusinessArchiveTypeCompleter().getValue(parameter);
+
             } else {
                 throw new IllegalArgumentException("Parameter is not a primitive: " + parameter);
             }
