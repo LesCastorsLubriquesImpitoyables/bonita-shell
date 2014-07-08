@@ -60,11 +60,13 @@ public class CommandArgumentsCompleter implements Completer {
 
                             CompletionHelper completionHelper = completer.getCompletionHelper();
                             if(completionHelper != null){
-                                completionHelper.printHelp(argumentParser.getLastArgument());
+                                completionHelper.addHelp(argumentParser, candidates);
                             }
+                            return  argumentParser.getLastArgument().length() + argumentParser.getOffset();
+                        }else{
+                            final int complete = completer.complete(argumentParser, candidates);
+                            return complete + argumentParser.getOffset();
                         }
-                        final int complete = completer.complete(argumentParser, candidates);
-                        return complete + argumentParser.getOffset();
                     }
                 }
             }
