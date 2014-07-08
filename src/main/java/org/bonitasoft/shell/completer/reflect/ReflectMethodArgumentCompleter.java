@@ -28,9 +28,9 @@ public class ReflectMethodArgumentCompleter implements BonitaCompleter {
         String methodName = parser.getMethodName();
         int index = parser.getArgumentIndex();
 
-        List<Class<?>> type = command.getArgumentType(methodName, index);
+        List<Class<?>> types = command.getArgumentType(methodName, index);
 
-        BonitaCompleter typeCompleter = TypeCompleters.getCompleter(type);
+        BonitaCompleter typeCompleter = TypeCompleters.getCompleter(types);
         if(typeCompleter == null){
             return 0;
         }
