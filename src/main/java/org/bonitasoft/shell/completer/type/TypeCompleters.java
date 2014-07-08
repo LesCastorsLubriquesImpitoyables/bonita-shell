@@ -1,6 +1,7 @@
 package org.bonitasoft.shell.completer.type;
 
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
+import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 
@@ -31,6 +32,7 @@ public class TypeCompleters {
         completers.put(float.class, new FloatCompleter());
         completers.put(Integer.class, new IntegerCompleter());
         completers.put(int.class, new IntegerCompleter());
+        completers.put(SearchOptions.class, new SearchOptionsCompleter());
     }
 
 
