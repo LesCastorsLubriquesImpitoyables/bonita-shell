@@ -34,22 +34,22 @@ import org.bonitasoft.shell.completer.ReflectCandidateListCompletionHandler;
  * 
  * @author Baptiste Mesta
  */
-public abstract class BaseShell<T extends ShellContext> {
+public abstract class BaseShell {
 
     private static final String PROMPT = "bonita> ";
 
     static final String HELP = "help";
 
-    private HashMap<String, ShellCommand<T>> commands;
+    private HashMap<String, ShellCommand> commands;
 
-    private HelpCommand<T> helpCommand;
+    private HelpCommand helpCommand;
 
     private File homeFoler;
 
     public void init() throws Exception {
-        final List<ShellCommand<T>> commandList = initShellCommands();
-        commands = new HashMap<String, ShellCommand<T>>();
-        for (final ShellCommand<T> shellCommand : commandList) {
+        final List<ShellCommand> commandList = initShellCommands();
+        commands = new HashMap<String, ShellCommand>();
+        for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
         helpCommand = getHelpCommand();
@@ -65,15 +65,15 @@ public abstract class BaseShell<T extends ShellContext> {
      * return the help command used
      * Can be overridden
      */
-    protected HelpCommand<T> getHelpCommand() {
-        return new HelpCommand<T>(commands);
+    protected HelpCommand getHelpCommand() {
+        return new HelpCommand(commands);
     }
 
     /**
      * @return list of commands contributed to the shell
      * @throws Exception
      */
-    protected abstract List<ShellCommand<T>> initShellCommands() throws Exception;
+    protected abstract List<ShellCommand> initShellCommands() throws Exception;
 
     /**
      * called by {@link BaseShell} when the shell is exited
@@ -90,7 +90,7 @@ public abstract class BaseShell<T extends ShellContext> {
         printWelcomeMessage();
         final ConsoleReader reader = new ConsoleReader(in, out);
         reader.setBellEnabled(false);
-        final CommandArgumentsCompleter<T> commandArgumentsCompleter = new CommandArgumentsCompleter<T>(commands);
+        final CommandArgumentsCompleter commandArgumentsCompleter = new CommandArgumentsCompleter(commands);
 
         reader.setCompletionHandler(new ReflectCandidateListCompletionHandler());
         reader.addCompleter(commandArgumentsCompleter);
@@ -100,7 +100,7 @@ public abstract class BaseShell<T extends ShellContext> {
             final List<String> args = parse(line);
             final String command = args.remove(0);
             if (commands.containsKey(command)) {
-                final ShellCommand<T> clientCommand = commands.get(command);
+                final ShellCommand clientCommand = commands.get(command);
                 if (clientCommand.validate(args)) {
                     try {
                         clientCommand.execute(args, getContext());
@@ -125,7 +125,7 @@ public abstract class BaseShell<T extends ShellContext> {
     /**
      * @return
      */
-    protected abstract T getContext();
+    protected abstract ShellContext getContext();
 
     /**
      * used to parse arguments of the line

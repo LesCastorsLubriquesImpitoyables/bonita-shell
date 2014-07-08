@@ -20,10 +20,10 @@ import org.bonitasoft.shell.ShellContext;
 /**
  * @author Baptiste Mesta
  */
-public class LogoutCommand<T extends ShellContext> extends ShellCommand<T> {
+public class LogoutCommand extends ShellCommand {
 
     @Override
-    public boolean execute(final List<String> args, final T context) throws Exception {
+    public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         if (context.isLogged()) {
             context.logout();
             System.out.println("Logged out");

@@ -7,36 +7,37 @@ import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.shell.BaseShell;
+import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ReflectCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 
-public class BonitaShell extends BaseShell<BonitaShellContext> {
+public class BonitaShell extends BaseShell {
 
     public BonitaShell() {
     }
 
     public static void main(final String[] args) throws Exception {
-        final BaseShell<BonitaShellContext> shell = new BonitaShell();
+        final BaseShell shell = new BonitaShell();
         shell.init();
         shell.run(System.in, System.out);
         shell.destroy();
     }
 
     @Override
-    protected BonitaShellContext getContext() {
+    protected ShellContext getContext() {
         return BonitaShellContext.getInstance();
     }
 
     @Override
-    protected List<ShellCommand<BonitaShellContext>> initShellCommands() throws Exception {
-        ArrayList<ShellCommand<BonitaShellContext>> commands = new ArrayList<ShellCommand<BonitaShellContext>>(4);
-        commands.add(new LoginCommand<BonitaShellContext>());
-        commands.add(new LogoutCommand<BonitaShellContext>());
-        commands.add(new ReflectCommand<BonitaShellContext>("process", ProcessAPI.class));
-        commands.add(new ReflectCommand<BonitaShellContext>("identity", IdentityAPI.class));
-        commands.add(new ReflectCommand<BonitaShellContext>("profile", ProfileAPI.class));
+    protected List<ShellCommand> initShellCommands() throws Exception {
+        ArrayList<ShellCommand> commands = new ArrayList<ShellCommand>(4);
+        commands.add(new LoginCommand());
+        commands.add(new LogoutCommand());
+        commands.add(new ReflectCommand("process", ProcessAPI.class));
+        commands.add(new ReflectCommand("identity", IdentityAPI.class));
+        commands.add(new ReflectCommand("profile", ProfileAPI.class));
         return commands;
         // return Arrays.asList(createCommand(LoginCommand.class), createCommand(LogoutCommand.class), createCommand(DeployOrganisationCommand.class),
         // createCommand(CreateGroupCommand.class),

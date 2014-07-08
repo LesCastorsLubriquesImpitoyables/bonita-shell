@@ -18,25 +18,26 @@ import jline.console.completer.StringsCompleter;
 
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
+import org.bonitasoft.shell.completer.BonitaCompleter;
 
 /**
  * Default implementation of the help command
  * 
  * @author Baptiste Mesta
  */
-public class HelpCommand<T extends ShellContext> extends ShellCommand<T> {
+public class HelpCommand extends ShellCommand {
 
-    private final HashMap<String, ShellCommand<T>> commands;
+    private final HashMap<String, ShellCommand> commands;
 
     /**
      * @param commands
      */
-    public HelpCommand(final HashMap<String, ShellCommand<T>> commands) {
+    public HelpCommand(final HashMap<String, ShellCommand> commands) {
         this.commands = commands;
     }
 
     @Override
-    public boolean execute(final List<String> args, final T context) throws Exception {
+    public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         commands.get(args.get(0)).printHelp();
         return true;
     }
@@ -52,8 +53,8 @@ public class HelpCommand<T extends ShellContext> extends ShellCommand<T> {
     }
 
     @Override
-    public List<Completer> getCompleters() {
-        return Arrays.asList((Completer) new StringsCompleter(commands.keySet()));
+    public List<BonitaCompleter> getCompleters() {
+        return Arrays.asList((BonitaCompleter) new StringsCompleter(commands.keySet()));
     }
 
     private void printUsage() {

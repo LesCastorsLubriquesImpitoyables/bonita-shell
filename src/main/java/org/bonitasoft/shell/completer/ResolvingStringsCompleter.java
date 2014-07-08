@@ -13,7 +13,7 @@ import jline.console.completer.StringsCompleter;
 /**
  * @author Baptiste Mesta
  */
-public abstract class ResolvingStringsCompleter extends StringsCompleter {
+public abstract class ResolvingStringsCompleter extends StringsCompleter implements BonitaCompleter {
 
     @Override
     public int complete(final String buffer, final int cursor, final List<CharSequence> candidates) {
@@ -23,6 +23,11 @@ public abstract class ResolvingStringsCompleter extends StringsCompleter {
             getStrings().addAll(resolveStrings);
         }
         return super.complete(buffer, cursor, candidates);
+    }
+
+    public int complete(ArgumentParser commandLine, List<CharSequence> candidates){
+        String lastArgument = commandLine.getLastArgument();
+        return complete(lastArgument,lastArgument.length(), candidates);
     }
 
     /**

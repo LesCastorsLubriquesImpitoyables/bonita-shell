@@ -17,7 +17,6 @@ package org.bonitasoft.shell.completer;
 
 import java.util.List;
 
-import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ReflectCommand;
 
 /**
@@ -26,9 +25,9 @@ import org.bonitasoft.shell.command.ReflectCommand;
  */
 public class ReflectMethodCompleter extends ResolvingStringsCompleter {
 
-    private final ReflectCommand<? extends ShellContext> command;
+    private final ReflectCommand command;
 
-    public ReflectMethodCompleter(final ReflectCommand<? extends ShellContext> command) {
+    public ReflectMethodCompleter(final ReflectCommand command) {
         this.command = command;
     }
 

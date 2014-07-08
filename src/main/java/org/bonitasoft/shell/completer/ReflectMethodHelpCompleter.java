@@ -8,32 +8,29 @@ package org.bonitasoft.shell.completer;
 
 import java.util.List;
 
-import jline.console.completer.Completer;
-
-import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ReflectCommand;
 
 /**
  * @author Baptiste Mesta
  */
-public class ReflectMethodHelpCompleter implements Completer {
+public class ReflectMethodHelpCompleter implements BonitaCompleter {
 
-    private final ReflectCommand<? extends ShellContext> reflectCommand;
+    private final ReflectCommand reflectCommand;
 
     /**
      * @param reflectCommand
      */
-    public ReflectMethodHelpCompleter(final ReflectCommand<? extends ShellContext> reflectCommand) {
+    public ReflectMethodHelpCompleter(final ReflectCommand reflectCommand) {
         this.reflectCommand = reflectCommand;
     }
 
+
     @Override
-    public int complete(final String buffer, final int cursor, final List<CharSequence> candidates) {
-        String methodHelp = reflectCommand.getMethodHelp(buffer);
+    public int complete(ArgumentParser commandLine, List<CharSequence> candidates) {
+        String methodHelp = reflectCommand.getMethodHelp(commandLine.getLastArgument());
         if (methodHelp != null) {
             candidates.add("**HELP" + methodHelp);
         }
-        return cursor;
+        return 0;
     }
-
 }

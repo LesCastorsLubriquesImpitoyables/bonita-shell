@@ -13,13 +13,14 @@ import java.util.List;
 import jline.console.completer.Completer;
 
 import org.bonitasoft.shell.ShellContext;
+import org.bonitasoft.shell.completer.BonitaCompleter;
 
 /**
  * A command that can be contributed to a shell
  * 
  * @author Baptiste Mesta
  */
-public abstract class ShellCommand<T extends ShellContext> {
+public abstract class ShellCommand {
 
     public abstract String getName();
 
@@ -32,9 +33,9 @@ public abstract class ShellCommand<T extends ShellContext> {
      *         true if the command was successfully executed
      * @throws Exception
      */
-    public abstract boolean execute(List<String> args, T context) throws Exception;
+    public abstract boolean execute(List<String> args, ShellContext context) throws Exception;
 
-    public List<Completer> getCompleters() {
+    public List<BonitaCompleter> getCompleters() {
         return Collections.emptyList();
     }
 

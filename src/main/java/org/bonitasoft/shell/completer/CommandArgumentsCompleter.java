@@ -25,16 +25,16 @@ import org.bonitasoft.shell.command.ShellCommand;
  * 
  * @author Baptiste Mesta
  */
-public class CommandArgumentsCompleter<T extends ShellContext> implements Completer {
+public class CommandArgumentsCompleter implements Completer {
 
-    private final HashMap<String, ShellCommand<T>> commands;
+    private final HashMap<String, ShellCommand> commands;
 
     private final StringsCompleter commandCompleter;
 
     /**
      * @param commands
      */
-    public CommandArgumentsCompleter(final HashMap<String, ShellCommand<T>> commands) {
+    public CommandArgumentsCompleter(final HashMap<String, ShellCommand> commands) {
         this.commands = commands;
         commandCompleter = new StringsCompleter(commands.keySet());
     }
@@ -52,18 +52,18 @@ public class CommandArgumentsCompleter<T extends ShellContext> implements Comple
             if (command != null) {
                 final int lastArgumentIndex = Math.max(argumentParser.getLastArgumentIndex(), 0);
                 // complete with element from completer of the command
-                final ShellCommand<T> clientCommand = commands.get(command);
+                final ShellCommand clientCommand = commands.get(command);
                 if (clientCommand != null) {
-                    final List<Completer> completers = clientCommand.getCompleters();
+                    final List<BonitaCompleter> completers = clientCommand.getCompleters();
                     if (completers.size() > lastArgumentIndex) {
-                        final Completer completer = completers.get(lastArgumentIndex);
+                        final BonitaCompleter completer = completers.get(lastArgumentIndex);
                         final String lastArgument = argumentParser.getLastArgument();
                         String previousArgument = argumentParser.getPreviousArgument();
                         final int complete;
                         if (lastArgument == null || lastArgument.isEmpty() && previousArgument != null) {
-                            complete = completer.complete(previousArgument, 0, candidates);
+                            complete = completer.complete(argumentParser, candidates);
                         } else {
-                            complete = completer.complete(lastArgument, lastArgument != null ? lastArgument.length() : 0, candidates);
+                            complete = completer.complete(argumentParser, candidates);
                         }
                         return complete + argumentParser.getOffset();
                     }

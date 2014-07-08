@@ -30,6 +30,8 @@ import jline.console.completer.Completer;
 
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.ReflectMethodArgumentCompleter;
 import org.bonitasoft.shell.completer.ReflectMethodCompleter;
 import org.bonitasoft.shell.completer.ReflectMethodHelpCompleter;
 
@@ -37,7 +39,7 @@ import org.bonitasoft.shell.completer.ReflectMethodHelpCompleter;
  * @author Baptiste Mesta
  * 
  */
-public class ReflectCommand<T extends ShellContext> extends ShellCommand<T> {
+public class ReflectCommand extends ShellCommand {
 
     private final String apiName;
 
@@ -69,7 +71,7 @@ public class ReflectCommand<T extends ShellContext> extends ShellCommand<T> {
     }
 
     @Override
-    public boolean execute(final List<String> args, final T context) throws Exception {
+    public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         Object api = context.getApi(apiName);
         String methodName = args.get(0);
         List<String> parameters = args.subList(1, args.size());
@@ -152,8 +154,8 @@ public class ReflectCommand<T extends ShellContext> extends ShellCommand<T> {
     }
 
     @Override
-    public List<Completer> getCompleters() {
-        return Arrays.<Completer> asList(new ReflectMethodCompleter(this), new ReflectMethodHelpCompleter(this));
+    public List<BonitaCompleter> getCompleters() {
+        return Arrays.<BonitaCompleter> asList(new ReflectMethodCompleter(this), new ReflectMethodHelpCompleter(this), new ReflectMethodArgumentCompleter(this));
     }
 
     /**

@@ -20,14 +20,16 @@ import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
 
 import org.bonitasoft.shell.ShellContext;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.BonitaStringCompleter;
 
 /**
  * @author Baptiste Mesta
  */
-public class LoginCommand<T extends ShellContext> extends ShellCommand<T> {
+public class LoginCommand extends ShellCommand {
 
     @Override
-    public boolean execute(final List<String> args, final T context) throws Exception {
+    public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         if (!context.isLogged()) {
             context.login(args.get(0), args.get(1));
             return true;
@@ -48,8 +50,8 @@ public class LoginCommand<T extends ShellContext> extends ShellCommand<T> {
     }
 
     @Override
-    public List<Completer> getCompleters() {
-        return Arrays.asList((Completer) new StringsCompleter("platform", "tenant"));
+    public List<BonitaCompleter> getCompleters() {
+        return Arrays.asList((BonitaCompleter) new BonitaStringCompleter("platform", "tenant"));
     }
 
     @Override
