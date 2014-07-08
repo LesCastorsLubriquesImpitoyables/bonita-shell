@@ -10,7 +10,7 @@ public class ToolsCommand extends ShellCommand {
 
     public static final String COMMAND_NAME = "tools";
 
-    private static final String[] SUB_COMMAND_NAME = { ReplayFailedTaskCommand.COMMAND_NAME, "" };
+    private static final String[] SUB_COMMAND_NAME = { ReplayFailedTaskCommand.COMMAND_NAME, SearchLockedCommand.COMMAND_NAME };
 
     @Override
     public String getName() {
@@ -24,14 +24,30 @@ public class ToolsCommand extends ShellCommand {
 
     @Override
     public boolean validate(List<String> args) {
-        return Arrays.asList(SUB_COMMAND_NAME).contains(args.get(0));
+        boolean valid = true;
+
+        if (args.size() <= 0) {
+            valid = false;
+            //throw new IllegalArgumentException("Missing sub command");
+        }
+
+        if (Arrays.asList(SUB_COMMAND_NAME).contains(args.get(0))) {
+            valid = true;
+        }
+
+        return valid;
     }
 
     @Override
     public boolean execute(List<String> args, ShellContext context) throws Exception {
+
         switch (args.get(0)) {
             case ReplayFailedTaskCommand.COMMAND_NAME:
                 (new ReplayFailedTaskCommand()).execute(args.subList(1, args.size()), context);
+                break;
+
+            case SearchLockedCommand.COMMAND_NAME:
+                (new SearchLockedCommand()).execute(args.subList(1, args.size()), context);
                 break;
 
             default:
