@@ -6,14 +6,19 @@
  */
 package org.bonitasoft.shell;
 
+import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
 
 import com.bonitasoft.engine.api.IdentityAPI;
 import com.bonitasoft.engine.api.LoginAPI;
+import com.bonitasoft.engine.api.MonitoringAPI;
+import com.bonitasoft.engine.api.PageAPI;
 import com.bonitasoft.engine.api.ProcessAPI;
 import com.bonitasoft.engine.api.ProfileAPI;
+import com.bonitasoft.engine.api.ReportingAPI;
 import com.bonitasoft.engine.api.TenantAPIAccessor;
+import com.bonitasoft.engine.api.ThemeAPI;
 
 /**
  * @author Baptiste Mesta
@@ -73,6 +78,25 @@ public class ShellContext {
         return TenantAPIAccessor.getProfileAPI(session);
     }
 
+    public PageAPI getPageAPI() throws BonitaException {
+        return TenantAPIAccessor.getPageAPI(session);
+    }
+
+    public MonitoringAPI getMonitoringAPI() throws BonitaException {
+        return TenantAPIAccessor.getMonitoringAPI(session);
+    }
+
+    public ThemeAPI getThemeAPI() throws BonitaException {
+        return TenantAPIAccessor.getThemeAPI(session);
+    }
+
+    public ReportingAPI getReportingAPI() throws BonitaException {
+        return TenantAPIAccessor.getReportingAPI(session);
+    }
+
+    public CommandAPI getCommandAPI() throws BonitaException {
+        return TenantAPIAccessor.getCommandAPI(session);
+    }
 
     @Deprecated
     public Object getApi(final String apiName) throws Exception {
@@ -84,6 +108,21 @@ public class ShellContext {
         }
         if (apiName.equals("ProfileAPI")) {
             return getProfileAPI();
+        }
+        if (apiName.equals("PageAPI")) {
+            return getPageAPI();
+        }
+        if (apiName.equals("MonitoringAPI")) {
+            return getMonitoringAPI();
+        }
+        if (apiName.equals("ThemeAPI")) {
+            return getThemeAPI();
+        }
+        if (apiName.equals("ReportingAPI")) {
+            return getReportingAPI();
+        }
+        if (apiName.equals("CommandAPI")) {
+            return getCommandAPI();
         }
         throw new IllegalArgumentException("Unknown API: " + apiName);
     }
