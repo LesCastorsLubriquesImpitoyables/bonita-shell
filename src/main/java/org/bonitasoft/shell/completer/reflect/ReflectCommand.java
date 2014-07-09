@@ -300,23 +300,8 @@ public class ReflectCommand extends ShellCommand {
             help += ")\n";
             help +=  methodHelp.getComment();
             help += "\n\n";
-
         }
-
-        List<Method> list = methodMap.get(methodName);
-        if (list != null) {
-            String help = "";
-            for (Method method : list) {
-                help += methodName + "(";
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                for (Class<?> class1 : parameterTypes) {
-                    help += class1.getSimpleName() + ", ";
-                }
-                help += ")\n";
-            }
-            return help;
-        }
-        return null;
+        return help;
     }
 
     public List<Class<?>> getArgumentType(String methodName, int index) {
