@@ -35,6 +35,7 @@ import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.type.TypeCompleters;
+import org.bonitasoft.shell.completer.type.TypeHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -250,7 +251,11 @@ public class ReflectCommand extends ShellCommand {
     }
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
-        return TypeCompleters.getCompleter(parameterType).isCastableTo(parameterAsString);
+        TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
+        if(completer == null){
+            return false;
+        }
+        return completer.isCastableTo(parameterAsString);
     }
 
     @Override
