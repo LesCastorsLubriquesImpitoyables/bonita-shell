@@ -15,37 +15,39 @@
  */
 package org.bonitasoft.shell.completer.reflect;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import japa.parser.JavaParser;
-import japa.parser.ParseException;
-import japa.parser.ast.Comment;
-import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.TypeParameter;
-import japa.parser.ast.body.BodyDeclaration;
-import japa.parser.ast.body.JavadocComment;
-import japa.parser.ast.body.MethodDeclaration;
-import japa.parser.ast.body.Parameter;
-import japa.parser.ast.type.ClassOrInterfaceType;
-import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.reflect.ReflectMethodArgumentCompleter;
-import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
-import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 import org.bonitasoft.shell.completer.type.TypeCompleters;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * @author Baptiste Mesta
  */
 public class ReflectCommand extends ShellCommand {
+
+    private static final Pattern METHOD_REGEX = Pattern.compile("([a-zA-Z_0-9]+)\\((.*)\\)");
+
+    private static final Pattern PARAM_REGEX = Pattern.compile("([a-zA-Z_0-9\\[\\]]+)(<.*>)?.([a-zA-Z_0-9]+)");
 
     private final String apiName;
 
@@ -62,93 +64,89 @@ public class ReflectCommand extends ShellCommand {
         this.apiName = apiClass.getSimpleName();
         methods = apiClass.getMethods();
         this.methodMap = new HashMap<String, List<Method>>();
-        HashSet<String> hashSet = new HashSet<String>();
-        for (Method m : methods) {
-            String methodName = m.getName();
+        final HashSet<String> hashSet = new HashSet<String>();
+        for (final Method m : methods) {
+            final String methodName = m.getName();
             hashSet.add(methodName);
             if (!methodMap.containsKey(methodName)) {
                 methodMap.put(methodName, new ArrayList<Method>());
             }
             methodMap.get(methodName).add(m);
         }
+
         methodNames = new ArrayList<String>(hashSet);
         Collections.sort(methodNames);
         methodHelpMap = retrieveMethodHelpFromSources(apiClass,methodMap);
-
-
     }
 
-    private Map<Method, MethodHelp> retrieveMethodHelpFromSources(Class<?> apiClass, Map<String, List<Method>> methodMap) {
-        List<Class<?>> allSuperClass = getAllSuperClass(apiClass);
-        List<CompilationUnit> compilationUnits = getCompilationUnits(allSuperClass);
-        HashMap<Method, MethodHelp> helpHashMap = new HashMap<Method, MethodHelp>();
-        for (CompilationUnit compilationUnit : compilationUnits) {
-            List<BodyDeclaration> members = compilationUnit.getTypes().get(0).getMembers();
-            for (BodyDeclaration member : members) {
-                if (member instanceof MethodDeclaration) {
-                    MethodDeclaration methodDeclaration = (MethodDeclaration) member;
-                    List<TypeParameter> parameters = methodDeclaration.getTypeParameters();
-                    JavadocComment javaDoc = methodDeclaration.getJavaDoc();
-                    ArrayList<String> parameterNames = new ArrayList<String>();
-                    for (TypeParameter parameter : parameters) {
-                        parameterNames.add(parameter.getName());
+    private Map<Method, MethodHelp> retrieveMethodHelpFromSources(final Class<?> apiClass, final Map<String, List<Method>> methodMap) {
+        final List<Class<?>> allSuperClass = getAllSuperClass(apiClass);
+        final HashMap<Method, MethodHelp> helpHashMap = new HashMap<Method, MethodHelp>();
+        final List<Document> javadocClasses = getJavadocClasses(allSuperClass);
+        for (final Document javadocClass : javadocClasses) {
+            final Elements methods = javadocClass.select(".overviewSummary td.colLast");
+            for (final Element element : methods) {
+                final String description = element.select(".block").text();
+                final String methodBlock = element.select("code").first().text();
+                final Matcher matcherMethod = METHOD_REGEX.matcher(methodBlock);
+                while (matcherMethod.find()) {
+                    final String name = matcherMethod.group(1);
+                    String param = matcherMethod.group(2);
+                    param = param.replace("...", "[]");
+                    final String[] params = param.split(", ");
+                    final ArrayList<String> parameterNames = new ArrayList<String>();
+                    final ArrayList<String> parameterTypes = new ArrayList<String>();
+                    for (int i = 0; i < params.length; i++) {
+                        final Matcher matcherParam = PARAM_REGEX.matcher(params[i]);
+                        while (matcherParam.find()) {
+                            parameterTypes.add(matcherParam.group(1));
+                            parameterNames.add(matcherParam.group(3));
+    }
                     }
-
-                    helpHashMap.put(getMethodOfDeclaration(methodMap,methodDeclaration) ,new MethodHelp(javaDoc.getContent(),parameterNames));
-
+                    helpHashMap.put(getMethodOfDeclaration(methodMap, name, parameterTypes), new MethodHelp(description, parameterNames));
                 }
             }
         }
-
-        return null;
+        return helpHashMap;
     }
 
-    private Method getMethodOfDeclaration(Map<String, List<Method>> methodMap, MethodDeclaration methodDeclaration) {
-        List<Method> methodList = methodMap.get(methodDeclaration.getName());
-        for (Method method : methodList) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            List<TypeParameter> typeParameters = methodDeclaration.getTypeParameters();
-            if(parameterTypes.length == typeParameters.size()){
+    private Method getMethodOfDeclaration(final Map<String, List<Method>> methodMap, final String name, final List<String> parameterTypesAsString) {
+        final List<Method> methodList = methodMap.get(name);
+        for (final Method method : methodList) {
+            final Class<?>[] parameterTypes = method.getParameterTypes();;
+            if (parameterTypes.length == parameterTypesAsString.size()) {
                 boolean isOk = true;
                 for (int i = 0; i < parameterTypes.length; i++) {
-                    TypeParameter typeParameter = typeParameters.get(i);
-                    Class<?> parameterType = parameterTypes[i];
-                    List<ClassOrInterfaceType> typeBound = typeParameter.getTypeBound();
-                    for (ClassOrInterfaceType classOrInterfaceType : typeBound) {
-                        if (!classOrInterfaceType.getName().equals(parameterType.getName())){
+                    final String typeParameter = parameterTypesAsString.get(i);
+                    final Class<?> parameterType = parameterTypes[i];
+
+                    if (!parameterType.getSimpleName().equals(typeParameter)) {
                             isOk = false;
                             break;
                         }
-
                     }
-                    if(!isOk){
-                        break;
-                    }
-                }
-                if(isOk){
+                if (isOk) {
                     return method;
                 }
             }
         }
-        throw new IllegalStateException("the method "+methodDeclaration.getName()+" does not exists in the type");
+        throw new IllegalStateException("the method " + name + " does not exists in the type");
     }
 
-    private List<CompilationUnit> getCompilationUnits(List<Class<?>> allSuperClass) {
-        ArrayList<CompilationUnit> compilationUnitss = new ArrayList<CompilationUnit>(allSuperClass.size());
-        for (Class<?> allSuperClas : allSuperClass) {
-            InputStream resourceAsStream = allSuperClas.getResourceAsStream("/"+allSuperClas.getName().replace(".","/") + ".java");
+    private List<Document> getJavadocClasses(final List<Class<?>> allSuperClass) {
+        final List<Document> javadoc = new ArrayList<Document>();
+        for (final Class<?> superClass : allSuperClass) {
             try {
-                compilationUnitss.add(JavaParser.parse(resourceAsStream));
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+                javadoc.add(Jsoup.parse(superClass.getResourceAsStream("/" + superClass.getName().replace(".", "/") + ".html"), null, "/"));
+            } catch (final IOException e) {
+                e.printStackTrace();
             }
-
         }
-        return compilationUnitss;
+        return javadoc;
     }
 
-    private List<Class<?>> getAllSuperClass(Class<?> apiClass) {
-        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+    private List<Class<?>> getAllSuperClass(final Class<?> apiClass) {
+        final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
         classes.addAll(Arrays.asList(apiClass.getInterfaces()));
         classes.add(apiClass);
         return classes;
@@ -161,20 +159,20 @@ public class ReflectCommand extends ShellCommand {
 
     @Override
     public boolean execute(final List<String> args, final ShellContext context) throws Exception {
-        Object api = context.getApi(apiName);
-        String methodName = args.get(0);
-        List<String> parameters = args.subList(1, args.size());
-        List<Method> methods = getMethods(methodName, this.methods, parameters);
-        Iterator<Method> iterator = methods.iterator();
+        final Object api = context.getApi(apiName);
+        final String methodName = args.get(0);
+        final List<String> parameters = args.subList(1, args.size());
+        final List<Method> methods = getMethods(methodName, this.methods, parameters);
+        final Iterator<Method> iterator = methods.iterator();
         while (iterator.hasNext()) {
-            Method method = iterator.next();
+            final Method method = iterator.next();
             try {
                 if (method != null) {
-                    Object result = invokeMethod(api, method, parameters);
+                    final Object result = invokeMethod(api, method, parameters);
                     //TODO handle return type
                     System.out.println(result);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 if (!iterator.hasNext()) {
                     throw e;
                 }
@@ -204,10 +202,10 @@ public class ReflectCommand extends ShellCommand {
      * @return
      */
     private Object[] castParameters(final Class<?>[] classes, final List<String> parameters) {
-        List<Object> list = new ArrayList<Object>(parameters.size());
+        final List<Object> list = new ArrayList<Object>(parameters.size());
         for (int i = 0; i < classes.length; i++) {
-            Class<?> clazz = classes[i];
-            String parameter = parameters.get(i);
+            final Class<?> clazz = classes[i];
+            final String parameter = parameters.get(i);
             Serializable casted;
             casted = getCastedParameter(clazz, parameter);
             list.add(casted);
@@ -215,7 +213,7 @@ public class ReflectCommand extends ShellCommand {
         return list.toArray();
     }
 
-    private Serializable getCastedParameter(Class<?> parameterClass, String parameter) {
+    private Serializable getCastedParameter(final Class<?> parameterClass, final String parameter) {
         if ("null".equals(parameter)) {
             return null;
         } else {
@@ -225,22 +223,22 @@ public class ReflectCommand extends ShellCommand {
     }
 
     private List<Method> getMethods(final String methodName, final Method[] methods, final List<String> parameters) {
-        List<Method> possibleMethods = new ArrayList<Method>();
+        final List<Method> possibleMethods = new ArrayList<Method>();
 
-        for (Method method : methods) {
+        for (final Method method : methods) {
             if (method.getName().equals(methodName)) {
                 if (method.getParameterTypes().length == parameters.size()) {
                     possibleMethods.add(method);
                 }
             }
         }
-        Iterator<Method> iterator = possibleMethods.iterator();
+        final Iterator<Method> iterator = possibleMethods.iterator();
         while (iterator.hasNext()) {
-            Method next = iterator.next();
-            Class<?>[] parameterTypes = next.getParameterTypes();
+            final Method next = iterator.next();
+            final Class<?>[] parameterTypes = next.getParameterTypes();
             for (int i = 0; i < parameterTypes.length; i++) {
-                Class<?> parameterType = parameterTypes[i];
-                String parameterAsString = parameters.get(i);
+                final Class<?> parameterType = parameterTypes[i];
+                final String parameterAsString = parameters.get(i);
                 if (!isCastableTo(parameterAsString, parameterType)) {
                     iterator.remove();
                     break;
@@ -253,7 +251,7 @@ public class ReflectCommand extends ShellCommand {
         throw new IllegalArgumentException("method does not exists");
     }
 
-    private boolean isCastableTo(String parameterAsString, Class<?> parameterType) {
+    private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
         return TypeCompleters.getCompleter(parameterType).isCastableTo(parameterAsString);
     }
 
@@ -285,7 +283,7 @@ public class ReflectCommand extends ShellCommand {
      */
     public String getMethodHelp(final String methodName) {
         List<Method> possibleMethods = methodMap.get(methodName);
-        String help = "";
+            String help = "";
         for (Method possibleMethod : possibleMethods) {
             MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
             List<String> argumentNames = methodHelp.getArgumentNames();
@@ -296,23 +294,23 @@ public class ReflectCommand extends ShellCommand {
                 if(i<argumentNames.size()){
                     help += ", ";
                 }
-            }
-            help += ")\n";
+                }
+                help += ")\n";
             help +=  methodHelp.getComment();
             help += "\n\n";
+            }
+            return help;
         }
-        return help;
-    }
 
-    public List<Class<?>> getArgumentType(String methodName, int index) {
-        List<Method> methods = methodMap.get(methodName);
+    public List<Class<?>> getArgumentType(final String methodName, final int index) {
+        final List<Method> methods = methodMap.get(methodName);
         if (methods == null) {
             return null;
         }
 
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        for (Method method : methods) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
+        final List<Class<?>> classes = new ArrayList<Class<?>>();
+        for (final Method method : methods) {
+            final Class<?>[] parameterTypes = method.getParameterTypes();
             if (index < parameterTypes.length) {
                 classes.add(parameterTypes[index]);
             }
