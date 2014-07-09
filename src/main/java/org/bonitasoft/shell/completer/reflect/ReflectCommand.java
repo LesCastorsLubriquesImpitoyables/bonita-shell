@@ -93,7 +93,7 @@ public class ReflectCommand extends ShellCommand {
                     for (TypeParameter parameter : parameters) {
                         parameterNames.add(parameter.getName());
                     }
-                    
+
                     helpHashMap.put(getMethodOfDeclaration(methodMap,methodDeclaration) ,new MethodHelp(javaDoc.getContent(),parameterNames));
 
                 }
@@ -284,6 +284,25 @@ public class ReflectCommand extends ShellCommand {
      * @param methodName
      */
     public String getMethodHelp(final String methodName) {
+        List<Method> possibleMethods = methodMap.get(methodName);
+        String help = "";
+        for (Method possibleMethod : possibleMethods) {
+            MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
+            List<String> argumentNames = methodHelp.getArgumentNames();
+            help += possibleMethod.getName() + "(";
+            Class<?>[] parameterTypes = possibleMethod.getParameterTypes();
+            for (int i = 0; i < argumentNames.size(); i++) {
+                help += parameterTypes[i].getSimpleName() +" "+argumentNames.get(i);
+                if(i<argumentNames.size()){
+                    help += ", ";
+                }
+            }
+            help += ")\n";
+            help +=  methodHelp.getComment();
+            help += "\n\n";
+
+        }
+
         List<Method> list = methodMap.get(methodName);
         if (list != null) {
             String help = "";
