@@ -32,4 +32,8 @@ public class StringCompleter implements TypeHandler<String> {
         return true;
     }
 
+    @Override
+    public String getString(String result) {
+        return result;
+    }
 }

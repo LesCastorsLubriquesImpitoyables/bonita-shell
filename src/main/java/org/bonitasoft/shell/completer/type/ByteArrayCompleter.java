@@ -49,4 +49,9 @@ public class ByteArrayCompleter extends FileNameCompleter implements TypeHandler
     public boolean isCastableTo(String argument) {
         return new File(argument).isFile();
     }
+
+    @Override
+    public String getString(byte[] result) {
+        return String.valueOf(result);
+    }
 }

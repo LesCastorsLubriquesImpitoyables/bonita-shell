@@ -35,4 +35,8 @@ public class FloatCompleter implements TypeHandler<Float> {
         }
     }
 
+    @Override
+    public String getString(Float result) {
+        return String.valueOf(result);
+    }
 }

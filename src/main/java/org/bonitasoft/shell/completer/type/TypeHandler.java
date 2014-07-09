@@ -13,4 +13,5 @@ public interface TypeHandler<T> extends BonitaCompleter {
 
     boolean isCastableTo(String argument);
 
+    String getString(T result);
 }

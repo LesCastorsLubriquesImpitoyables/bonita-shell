@@ -35,4 +35,8 @@ public class DoubleCompleter implements TypeHandler<Double> {
         }
     }
 
+    @Override
+    public String getString(Double result) {
+        return String.valueOf(result);
+    }
 }

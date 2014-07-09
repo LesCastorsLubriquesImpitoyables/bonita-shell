@@ -37,4 +37,8 @@ public class LongCompleter  implements TypeHandler<Long> {
         }
     }
 
+    @Override
+    public String getString(Long result) {
+        return String.valueOf(result);
+    }
 }

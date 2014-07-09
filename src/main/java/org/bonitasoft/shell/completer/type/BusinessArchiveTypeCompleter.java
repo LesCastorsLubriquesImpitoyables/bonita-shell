@@ -43,4 +43,9 @@ public class BusinessArchiveTypeCompleter extends FileNameCompleter implements B
     public boolean isCastableTo(String argument) {
         return new File(argument).isFile();
     }
+
+    @Override
+    public String getString(BusinessArchive result) {
+        return String.valueOf(result);
+    }
 }

@@ -35,4 +35,8 @@ public class IntegerCompleter implements TypeHandler<Integer> {
         }
     }
 
+    @Override
+    public String getString(Integer result) {
+        return String.valueOf(result);
+    }
 }

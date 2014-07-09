@@ -169,7 +169,7 @@ public class ReflectCommand extends ShellCommand {
             try {
                 if (method != null) {
                     final Object result = invokeMethod(api, method, parameters);
-                    TypeCompleters.getCompleter(result.getClass());
+                    PrintColor.printGreenBold(printResult(result));
                 }
             } catch (final Exception e) {
                 if (!iterator.hasNext()) {
@@ -179,6 +179,17 @@ public class ReflectCommand extends ShellCommand {
         }
 
         return false;
+    }
+
+    public static String printResult(Object result) {
+        String string = "";
+        TypeHandler completer = TypeCompleters.getCompleter(result.getClass());
+        if(completer != null){
+            string = completer.getString(result);
+        }else{
+            string = String.valueOf(result);
+        }
+        return string;
     }
 
     /**

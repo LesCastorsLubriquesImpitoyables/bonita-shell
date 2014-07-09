@@ -42,4 +42,9 @@ public class BooleanCompleter extends ResolvingStringsCompleter implements TypeH
     public List<String> resolveStrings() {
         return Arrays.asList("true","false");
     }
+
+    @Override
+    public String getString(Boolean result) {
+        return String.valueOf(result);
+    }
 }

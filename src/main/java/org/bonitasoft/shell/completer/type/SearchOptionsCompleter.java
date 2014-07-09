@@ -40,4 +40,8 @@ public class SearchOptionsCompleter implements TypeHandler<SearchOptions> {
         return pattern.matcher(argument).matches();
     }
 
+    @Override
+    public String getString(SearchOptions result) {
+        return String.valueOf(result);
+    }
 }
