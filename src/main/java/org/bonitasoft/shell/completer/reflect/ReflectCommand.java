@@ -10,7 +10,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- ** 
+ **
  * @since 6.2
  */
 package org.bonitasoft.shell.completer.reflect;
@@ -100,7 +100,7 @@ public class ReflectCommand extends ShellCommand {
                         while (matcherParam.find()) {
                             parameterTypes.add(matcherParam.group(1));
                             parameterNames.add(matcherParam.group(3));
-    }
+                        }
                     }
                     helpHashMap.put(getMethodOfDeclaration(methodMap, name, parameterTypes), new MethodHelp(description, parameterNames));
                 }
@@ -120,10 +120,10 @@ public class ReflectCommand extends ShellCommand {
                     final Class<?> parameterType = parameterTypes[i];
 
                     if (!parameterType.getSimpleName().equals(typeParameter)) {
-                            isOk = false;
-                            break;
-                        }
+                        isOk = false;
+                        break;
                     }
+                }
                 if (isOk) {
                     return method;
                 }
@@ -190,7 +190,7 @@ public class ReflectCommand extends ShellCommand {
      * @throws IllegalArgumentException
      */
     private Object invokeMethod(final Object api, final Method method, final List<String> parameters) throws IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException {
+    InvocationTargetException {
         return method.invoke(api, castParameters(method.getParameterTypes(), parameters));
     }
 
@@ -283,22 +283,22 @@ public class ReflectCommand extends ShellCommand {
         final List<Method> possibleMethods = methodMap.get(methodName);
         String help = "";
         if(possibleMethods != null){
-            for (Method possibleMethod : possibleMethods) {
-                MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
+            for (final Method possibleMethod : possibleMethods) {
+                final MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
                 if(methodHelp != null){
-                    List<String> argumentNames = methodHelp.getArgumentNames();
-            help += possibleMethod.getName() + "(";
-            final Class<?>[] parameterTypes = possibleMethod.getParameterTypes();
-            for (int i = 0; i < argumentNames.size(); i++) {
-                help += parameterTypes[i].getSimpleName() + " " + argumentNames.get(i);
-                if (i < argumentNames.size() - 1) {
-                    help += ", ";
+                    final List<String> argumentNames = methodHelp.getArgumentNames();
+                    help += possibleMethod.getName() + "(";
+                    final Class<?>[] parameterTypes = possibleMethod.getParameterTypes();
+                    for (int i = 0; i < argumentNames.size(); i++) {
+                        help += PrintColor.getGreenBold(parameterTypes[i].getSimpleName()) + " " + PrintColor.getGreen(argumentNames.get(i));
+                        if (i < argumentNames.size() - 1) {
+                            help += ", ";
+                        }
+                    }
+                    help += ")\n";
+                    help +=  methodHelp.getComment();
+                    help += "\n\n";
                 }
-            }
-            help += ")\n";
-            help +=  methodHelp.getComment();
-            help += "\n\n";
-        }
             }
         }
         return help;

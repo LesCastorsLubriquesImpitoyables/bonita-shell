@@ -186,7 +186,7 @@ public abstract class BaseShell {
     }
 
     protected String getPrompt() {
-        return getContext().getLoggedUser() + "@" + PROMPT;
+        return PrintColor.getRedBold(getContext().getLoggedUser()) + "@" + PrintColor.getBlue(PROMPT);
     }
 
     protected void printWelcomeMessage() {
