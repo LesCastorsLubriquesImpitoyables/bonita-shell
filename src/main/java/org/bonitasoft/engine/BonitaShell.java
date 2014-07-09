@@ -10,8 +10,9 @@ import org.bonitasoft.shell.BaseShell;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
-import org.bonitasoft.shell.command.ReflectCommand;
 import org.bonitasoft.shell.command.ShellCommand;
+import org.bonitasoft.shell.command.tools.ReplayFailedTaskCommand;
+import org.bonitasoft.shell.completer.reflect.ReflectCommand;
 import org.bonitasoft.shell.command.tools.ToolsCommand;
 
 public class BonitaShell extends BaseShell {
@@ -33,12 +34,12 @@ public class BonitaShell extends BaseShell {
 
     @Override
     protected List<ShellCommand> initShellCommands() throws Exception {
-        ArrayList<ShellCommand> commands = new ArrayList<>(4);
+        final ArrayList<ShellCommand> commands = new ArrayList<>(4);
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
-        commands.add(new ReflectCommand("process", ProcessAPI.class));
-        commands.add(new ReflectCommand("identity", IdentityAPI.class));
-        commands.add(new ReflectCommand("profile", ProfileAPI.class));
+        commands.add(new ReflectCommand(ProcessAPI.class));
+        commands.add(new ReflectCommand(IdentityAPI.class));
+        commands.add(new ReflectCommand(ProfileAPI.class));
         commands.add(new ToolsCommand());
         return commands;
         // return Arrays.asList(createCommand(LoginCommand.class), createCommand(LogoutCommand.class), createCommand(DeployOrganisationCommand.class),

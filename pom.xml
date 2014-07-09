@@ -18,6 +18,17 @@
 			<artifactId>bonita-client-sp</artifactId>
 			<version>6.3.2</version>
 		</dependency>
+        <dependency>
+            <groupId>com.bonitasoft.engine</groupId>
+            <artifactId>bonita-global-javadoc</artifactId>
+            <version>6.3.2</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.javaparser</groupId>
+            <artifactId>javaparser</artifactId>
+            <version>1.0.8</version>
+        </dependency>
 		
 		<!-- <dependency> -->
 		<!-- <groupId>commons-io</groupId> -->
@@ -46,6 +57,12 @@
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.5</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
 
