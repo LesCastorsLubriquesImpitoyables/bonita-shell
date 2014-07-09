@@ -18,26 +18,19 @@ package org.bonitasoft.shell.command;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import jline.console.completer.Completer;
-
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodArgumentCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodCompleter;
-import org.bonitasoft.shell.completer.ReflectMethodHelpCompleter;
+import org.bonitasoft.shell.completer.reflect.ReflectMethodArgumentCompleter;
+import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
+import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
+import org.bonitasoft.shell.completer.type.TypeCompleters;
 
 /**
  * @author Baptiste Mesta
- * 
  */
 public class ReflectCommand extends ShellCommand {
 
@@ -75,11 +68,23 @@ public class ReflectCommand extends ShellCommand {
         Object api = context.getApi(apiName);
         String methodName = args.get(0);
         List<String> parameters = args.subList(1, args.size());
-        Method method = getMethod(methodName, methods, parameters);
-        if (method != null) {
-            Object result = invokeMethod(api, method, parameters);
-            System.out.println(result);
+        List<Method> methods = getMethods(methodName, this.methods, parameters);
+        Iterator<Method> iterator = methods.iterator();
+        while (iterator.hasNext()) {
+            Method method = iterator.next();
+            try {
+                if (method != null) {
+                    Object result = invokeMethod(api, method, parameters);
+                    //TODO handle return type
+                    System.out.println(result);
+                }
+            } catch (Exception e) {
+                if (!iterator.hasNext()) {
+                    throw e;
+                }
+            }
         }
+
         return false;
     }
 
@@ -106,40 +111,54 @@ public class ReflectCommand extends ShellCommand {
         List<Object> list = new ArrayList<Object>(parameters.size());
         for (int i = 0; i < classes.length; i++) {
             Class<?> clazz = classes[i];
-            Object parameterClass = clazz.getName();
             String parameter = parameters.get(i);
             Serializable casted;
-            if (parameter == null) {
-                casted = null;
-            } else if (Boolean.class.getName().equals(parameterClass) || "bool".equals(parameterClass)) {
-                casted = Boolean.parseBoolean(parameter);
-            } else if (Long.class.getName().equals(parameterClass) || "long".equals(parameterClass)) {
-                casted = Long.parseLong(parameter);
-            } else if (Double.class.getName().equals(parameterClass) || "double".equals(parameterClass)) {
-                casted = Double.parseDouble(parameter);
-            } else if (Float.class.getName().equals(parameterClass) || "float".equals(parameterClass)) {
-                casted = Float.parseFloat(parameter);
-            } else if (Integer.class.getName().equals(parameterClass) || "int".equals(parameterClass)) {
-                casted = Integer.parseInt(parameter);
-            } else if (String.class.getName().equals(parameterClass)) {
-                casted = parameter;
-            } else {
-                throw new IllegalArgumentException("Parameter is not a primitive: " + parameter);
-            }
+            casted = getCastedParameter(clazz, parameter);
             list.add(casted);
         }
         return list.toArray();
     }
 
-    private Method getMethod(final String methodName, final Method[] methods, final List<String> parameters) {
+    private Serializable getCastedParameter(Class<?> parameterClass, String parameter) {
+        if ("null".equals(parameter)) {
+            return null;
+        } else {
+            return (Serializable) TypeCompleters.getCompleter(parameterClass).getValue(parameter);
+        }
+
+    }
+
+    private List<Method> getMethods(final String methodName, final Method[] methods, final List<String> parameters) {
+        List<Method> possibleMethods = new ArrayList<Method>();
+
         for (Method method : methods) {
             if (method.getName().equals(methodName)) {
                 if (method.getParameterTypes().length == parameters.size()) {
-                    return method;
+                    possibleMethods.add(method);
                 }
             }
         }
+        Iterator<Method> iterator = possibleMethods.iterator();
+        while (iterator.hasNext()) {
+            Method next = iterator.next();
+            Class<?>[] parameterTypes = next.getParameterTypes();
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> parameterType = parameterTypes[i];
+                String parameterAsString = parameters.get(i);
+                if (!isCastableTo(parameterAsString, parameterType)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+        if (!possibleMethods.isEmpty()) {
+            return possibleMethods;
+        }
         throw new IllegalArgumentException("method does not exists");
+    }
+
+    private boolean isCastableTo(String parameterAsString, Class<?> parameterType) {
+        return TypeCompleters.getCompleter(parameterType).isCastableTo(parameterAsString);
     }
 
     @Override
@@ -155,7 +174,7 @@ public class ReflectCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.<BonitaCompleter> asList(new ReflectMethodCompleter(this), new ReflectMethodHelpCompleter(this), new ReflectMethodArgumentCompleter(this));
+        return Arrays.<BonitaCompleter> asList(new ReflectMethodCompleter(this), new ReflectMethodArgumentCompleter(this));
     }
 
     /**
@@ -184,4 +203,22 @@ public class ReflectCommand extends ShellCommand {
         }
         return null;
     }
+
+    public List<Class<?>> getArgumentType(String methodName, int index) {
+        List<Method> methods = methodMap.get(methodName);
+        if (methods == null) {
+            return null;
+        }
+
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        for (Method method : methods) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            if (index < parameterTypes.length) {
+                classes.add(parameterTypes[index]);
+            }
+        }
+
+        return classes;
+    }
+
 }

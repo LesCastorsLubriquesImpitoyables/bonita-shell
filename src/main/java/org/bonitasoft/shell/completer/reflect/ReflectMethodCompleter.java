@@ -13,11 +13,13 @@
  ** 
  * @since 6.2
  */
-package org.bonitasoft.shell.completer;
+package org.bonitasoft.shell.completer.reflect;
 
 import java.util.List;
 
 import org.bonitasoft.shell.command.ReflectCommand;
+import org.bonitasoft.shell.completer.CompletionHelper;
+import org.bonitasoft.shell.completer.ResolvingStringsCompleter;
 
 /**
  * @author Baptiste Mesta
@@ -34,6 +36,11 @@ public class ReflectMethodCompleter extends ResolvingStringsCompleter {
     @Override
     public List<String> resolveStrings() {
         return command.getMethodNames();
+    }
+
+
+    public CompletionHelper getCompletionHelper(){
+        return new ReflectMethodCompletionHelper(command);
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.List;
 import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
 
-import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 
 /**
@@ -55,18 +54,18 @@ public class CommandArgumentsCompleter implements Completer {
                 final ShellCommand clientCommand = commands.get(command);
                 if (clientCommand != null) {
                     final List<BonitaCompleter> completers = clientCommand.getCompleters();
-                    if (completers.size() > lastArgumentIndex) {
-                        final BonitaCompleter completer = completers.get(lastArgumentIndex);
-                        final String lastArgument = argumentParser.getLastArgument();
-                        String previousArgument = argumentParser.getPreviousArgument();
-                        final int complete;
-                        if (lastArgument == null || lastArgument.isEmpty() && previousArgument != null) {
-                            complete = completer.complete(argumentParser, candidates);
+                        final BonitaCompleter completer = completers.get(Math.min(lastArgumentIndex,completers.size()-1));
+                        if (argumentParser.isLastArgumentCompleted()) {
+
+                            CompletionHelper completionHelper = completer.getCompletionHelper();
+                            if (completionHelper != null) {
+                                completionHelper.addHelp(argumentParser, candidates);
+                            }
+                            return (argumentParser.getLastArgument() != null ? argumentParser.getLastArgument().length() : 0) + argumentParser.getOffset();
                         } else {
-                            complete = completer.complete(argumentParser, candidates);
+                            final int complete = completer.complete(argumentParser, candidates);
+                            return complete + argumentParser.getOffset();
                         }
-                        return complete + argumentParser.getOffset();
-                    }
                 }
             }
         }

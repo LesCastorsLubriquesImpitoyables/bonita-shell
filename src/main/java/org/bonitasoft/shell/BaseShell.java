@@ -24,7 +24,7 @@ import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.CommandArgumentsCompleter;
-import org.bonitasoft.shell.completer.ReflectCandidateListCompletionHandler;
+import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHandler;
 
 /**
  * A basic shell
@@ -186,17 +186,24 @@ public abstract class BaseShell {
     }
 
     protected String getPrompt() {
-        return PROMPT;
+        return getContext().getLoggedUser() + "@" + PROMPT;
     }
 
     protected void printWelcomeMessage() {
         System.out.println("Welcome to Bonita Shell.\n For assistance press TAB or type \"help\" then hit ENTER.");
-        PrintColor.printRedBold("______             _ _        _____ _          _ _ ");
-        PrintColor.printRedBold("| ___ \\           (_) |      /  ___| |        | | |");
-        PrintColor.printRedBold("| |_/ / ___  _ __  _| |_ __ _\\ `--.| |__   ___| | |");
-        PrintColor.printRedBold("| ___ \\/ _ \\| '_ \\| | __/ _` |`--. \\ '_ \\ / _ \\ | |");
-        PrintColor.printRedBold("| |_/ / (_) | | | | | || (_| /\\__/ / | | |  __/ | |");
-        PrintColor.printRedBold("\\____/ \\___/|_| |_|_|\\__\\__,_\\____/|_| |_|\\___|_|_|");
+        PrintColor.printRedBold("     .ZZ         ");
+        PrintColor.printRedBold("    .ZZ          ");
+        PrintColor.printRedBold("    ZZ           ");
+        PrintColor.printRedBold("   ZZ.     ZZZZZ ______             _ _        _____ _          _ _ ");
+        PrintColor.printRedBold("  ZZZ     ZZ .   | ___ \\           (_) |      /  ___| |        | | |");
+        PrintColor.printRedBold("  ZZ.     .ZZ    | |_/ / ___  _ __  _| |_ __ _\\ `--.| |__   ___| | |");
+        PrintColor.printRedBold("  ZZ  ZZZ. ZZZ   | ___ \\/ _ \\| '_ \\| | __/ _` |`--. \\ '_ \\ / _ \\ | |");
+        PrintColor.printRedBold("  ZZ. .    ZZZ   | |_/ / (_) | | | | | || (_| /\\__/ / | | |  __/ | |");
+        PrintColor.printRedBold("  ZZZ.   .ZZZ.   \\____/ \\___/|_| |_|_|\\__\\__,_\\____/|_| |_|\\___|_|_|");
+        PrintColor.printRedBold("  ~ZZZZZZZZZ.    ");
+        PrintColor.printRedBold("    IZZZZZ.      ");
+        PrintColor.printRedBold("");
+
         System.out.println("");
         System.out.println("");
         System.out.println("");

@@ -16,9 +16,6 @@ package org.bonitasoft.shell.command;
 import java.util.Arrays;
 import java.util.List;
 
-import jline.console.completer.Completer;
-import jline.console.completer.StringsCompleter;
-
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.BonitaStringCompleter;

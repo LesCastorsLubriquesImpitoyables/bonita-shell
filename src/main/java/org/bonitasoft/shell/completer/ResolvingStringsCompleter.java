@@ -27,7 +27,7 @@ public abstract class ResolvingStringsCompleter extends StringsCompleter impleme
 
     public int complete(ArgumentParser commandLine, List<CharSequence> candidates){
         String lastArgument = commandLine.getLastArgument();
-        return complete(lastArgument,lastArgument.length(), candidates);
+        return complete(lastArgument,lastArgument != null ? lastArgument.length():0, candidates);
     }
 
     /**
