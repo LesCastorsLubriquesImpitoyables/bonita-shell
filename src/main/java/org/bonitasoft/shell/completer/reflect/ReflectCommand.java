@@ -13,16 +13,29 @@
  ** 
  * @since 6.2
  */
-package org.bonitasoft.shell.command;
+package org.bonitasoft.shell.completer.reflect;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import japa.parser.JavaParser;
+import japa.parser.ParseException;
+import japa.parser.ast.Comment;
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.TypeParameter;
+import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.JavadocComment;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
+import japa.parser.ast.type.ClassOrInterfaceType;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
+import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.reflect.ReflectMethodArgumentCompleter;
 import org.bonitasoft.shell.completer.reflect.ReflectMethodCompleter;
@@ -40,11 +53,15 @@ public class ReflectCommand extends ShellCommand {
 
     private final ArrayList<String> methodNames;
 
-    private final Map<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
+    private final Map<String, List<Method>> methodMap;
 
-    public ReflectCommand(final String apiName, final Class<?> apiClass) {
-        this.apiName = apiName;
+    private final Map<Method, MethodHelp> methodHelpMap;
+
+
+    public ReflectCommand(final Class<?> apiClass) {
+        this.apiName = apiClass.getSimpleName();
         methods = apiClass.getMethods();
+        this.methodMap = new HashMap<String, List<Method>>();
         HashSet<String> hashSet = new HashSet<String>();
         for (Method m : methods) {
             String methodName = m.getName();
@@ -56,6 +73,85 @@ public class ReflectCommand extends ShellCommand {
         }
         methodNames = new ArrayList<String>(hashSet);
         Collections.sort(methodNames);
+        methodHelpMap = retrieveMethodHelpFromSources(apiClass,methodMap);
+
+
+    }
+
+    private Map<Method, MethodHelp> retrieveMethodHelpFromSources(Class<?> apiClass, Map<String, List<Method>> methodMap) {
+        List<Class<?>> allSuperClass = getAllSuperClass(apiClass);
+        List<CompilationUnit> compilationUnits = getCompilationUnits(allSuperClass);
+        HashMap<Method, MethodHelp> helpHashMap = new HashMap<Method, MethodHelp>();
+        for (CompilationUnit compilationUnit : compilationUnits) {
+            List<BodyDeclaration> members = compilationUnit.getTypes().get(0).getMembers();
+            for (BodyDeclaration member : members) {
+                if (member instanceof MethodDeclaration) {
+                    MethodDeclaration methodDeclaration = (MethodDeclaration) member;
+                    List<TypeParameter> parameters = methodDeclaration.getTypeParameters();
+                    JavadocComment javaDoc = methodDeclaration.getJavaDoc();
+                    ArrayList<String> parameterNames = new ArrayList<String>();
+                    for (TypeParameter parameter : parameters) {
+                        parameterNames.add(parameter.getName());
+                    }
+                    
+                    helpHashMap.put(getMethodOfDeclaration(methodMap,methodDeclaration) ,new MethodHelp(javaDoc.getContent(),parameterNames));
+
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private Method getMethodOfDeclaration(Map<String, List<Method>> methodMap, MethodDeclaration methodDeclaration) {
+        List<Method> methodList = methodMap.get(methodDeclaration.getName());
+        for (Method method : methodList) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            List<TypeParameter> typeParameters = methodDeclaration.getTypeParameters();
+            if(parameterTypes.length == typeParameters.size()){
+                boolean isOk = true;
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    TypeParameter typeParameter = typeParameters.get(i);
+                    Class<?> parameterType = parameterTypes[i];
+                    List<ClassOrInterfaceType> typeBound = typeParameter.getTypeBound();
+                    for (ClassOrInterfaceType classOrInterfaceType : typeBound) {
+                        if (!classOrInterfaceType.getName().equals(parameterType.getName())){
+                            isOk = false;
+                            break;
+                        }
+
+                    }
+                    if(!isOk){
+                        break;
+                    }
+                }
+                if(isOk){
+                    return method;
+                }
+            }
+        }
+        throw new IllegalStateException("the method "+methodDeclaration.getName()+" does not exists in the type");
+    }
+
+    private List<CompilationUnit> getCompilationUnits(List<Class<?>> allSuperClass) {
+        ArrayList<CompilationUnit> compilationUnitss = new ArrayList<CompilationUnit>(allSuperClass.size());
+        for (Class<?> allSuperClas : allSuperClass) {
+            InputStream resourceAsStream = allSuperClas.getResourceAsStream("/"+allSuperClas.getName().replace(".","/") + ".java");
+            try {
+                compilationUnitss.add(JavaParser.parse(resourceAsStream));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        return compilationUnitss;
+    }
+
+    private List<Class<?>> getAllSuperClass(Class<?> apiClass) {
+        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.addAll(Arrays.asList(apiClass.getInterfaces()));
+        classes.add(apiClass);
+        return classes;
     }
 
     @Override

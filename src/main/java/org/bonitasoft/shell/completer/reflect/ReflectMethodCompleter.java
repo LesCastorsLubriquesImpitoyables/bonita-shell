@@ -17,7 +17,7 @@ package org.bonitasoft.shell.completer.reflect;
 
 import java.util.List;
 
-import org.bonitasoft.shell.command.ReflectCommand;
+import org.bonitasoft.shell.completer.reflect.ReflectCommand;
 import org.bonitasoft.shell.completer.CompletionHelper;
 import org.bonitasoft.shell.completer.ResolvingStringsCompleter;
 

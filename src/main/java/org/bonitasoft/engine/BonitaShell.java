@@ -10,7 +10,7 @@ import org.bonitasoft.shell.BaseShell;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
-import org.bonitasoft.shell.command.ReflectCommand;
+import org.bonitasoft.shell.completer.reflect.ReflectCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.command.tools.ReplayFailedTaskCommand;
 
