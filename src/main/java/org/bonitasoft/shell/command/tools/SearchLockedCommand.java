@@ -23,7 +23,7 @@ import com.bonitasoft.engine.api.ProcessAPI;
  */
 public class SearchLockedCommand extends ShellCommand {
 
-    public static final String COMMAND_NAME = "search_locked";
+    public static final String COMMAND_NAME = "tools_search_locked";
 
     private static final String BEFORE_ARG_NAME = "before:";
 

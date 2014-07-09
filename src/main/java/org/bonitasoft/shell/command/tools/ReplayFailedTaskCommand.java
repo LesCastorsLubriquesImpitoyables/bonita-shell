@@ -28,7 +28,7 @@ import com.bonitasoft.engine.api.ProcessAPI;
  */
 public class ReplayFailedTaskCommand extends ShellCommand {
 
-    public static final String COMMAND_NAME = "replay_failed_task";
+    public static final String COMMAND_NAME = "tools_replay_failed_task";
 
     @Override
     public String getName() {

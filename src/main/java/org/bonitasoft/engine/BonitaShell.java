@@ -12,8 +12,8 @@ import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.command.tools.ReplayFailedTaskCommand;
+import org.bonitasoft.shell.command.tools.SearchLockedCommand;
 import org.bonitasoft.shell.completer.reflect.ReflectCommand;
-import org.bonitasoft.shell.command.tools.ToolsCommand;
 
 public class BonitaShell extends BaseShell {
 
@@ -40,7 +40,8 @@ public class BonitaShell extends BaseShell {
         commands.add(new ReflectCommand(ProcessAPI.class));
         commands.add(new ReflectCommand(IdentityAPI.class));
         commands.add(new ReflectCommand(ProfileAPI.class));
-        commands.add(new ToolsCommand());
+        commands.add(new ReplayFailedTaskCommand());
+        commands.add(new SearchLockedCommand());
         return commands;
         // return Arrays.asList(createCommand(LoginCommand.class), createCommand(LogoutCommand.class), createCommand(DeployOrganisationCommand.class),
         // createCommand(CreateGroupCommand.class),
