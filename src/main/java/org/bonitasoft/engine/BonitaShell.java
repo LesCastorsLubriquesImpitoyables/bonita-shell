@@ -36,9 +36,9 @@ public class BonitaShell extends BaseShell {
         ArrayList<ShellCommand> commands = new ArrayList<>(4);
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
-        commands.add(new ReflectCommand("process", ProcessAPI.class));
-        commands.add(new ReflectCommand("identity", IdentityAPI.class));
-        commands.add(new ReflectCommand("profile", ProfileAPI.class));
+        commands.add(new ReflectCommand(ProcessAPI.class));
+        commands.add(new ReflectCommand(IdentityAPI.class));
+        commands.add(new ReflectCommand(ProfileAPI.class));
         commands.add(new ReplayFailedTaskCommand());
         return commands;
         // return Arrays.asList(createCommand(LoginCommand.class), createCommand(LogoutCommand.class), createCommand(DeployOrganisationCommand.class),
