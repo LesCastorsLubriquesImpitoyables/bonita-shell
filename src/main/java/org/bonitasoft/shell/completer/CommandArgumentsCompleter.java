@@ -54,7 +54,7 @@ public class CommandArgumentsCompleter implements Completer {
                 final ShellCommand clientCommand = commands.get(command);
                 if (clientCommand != null) {
                     final List<BonitaCompleter> completers = clientCommand.getCompleters();
-                    final BonitaCompleter completer = completers.get(Math.min(lastArgumentIndex, completers.size() - 1));
+                    final BonitaCompleter completer = completers.get(Math.min(lastArgumentIndex, Math.max(0, completers.size() - 1)));
                     if (argumentParser.isLastArgumentCompleted()) {
 
                         CompletionHelper completionHelper = completer.getCompletionHelper();

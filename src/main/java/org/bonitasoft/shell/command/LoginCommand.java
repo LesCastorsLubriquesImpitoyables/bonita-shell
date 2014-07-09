@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.BonitaStringCompleter;
+import org.bonitasoft.shell.completer.NoParamCompleter;
 
 /**
  * @author Baptiste Mesta
@@ -48,7 +48,7 @@ public class LoginCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.asList((BonitaCompleter) new BonitaStringCompleter("platform", "tenant"));
+        return Arrays.asList((BonitaCompleter) new NoParamCompleter("<username> <password>"));
     }
 
     @Override

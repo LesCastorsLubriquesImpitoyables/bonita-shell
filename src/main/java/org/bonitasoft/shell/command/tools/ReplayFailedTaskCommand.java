@@ -1,5 +1,6 @@
 package org.bonitasoft.shell.command.tools;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,11 @@ import org.bonitasoft.engine.bpm.flownode.ActivityInstanceSearchDescriptor;
 import org.bonitasoft.engine.bpm.flownode.ActivityStates;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
+import org.bonitasoft.engine.session.InvalidSessionException;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.NoParamCompleter;
 
 import com.bonitasoft.engine.api.ProcessAPI;
 
@@ -29,6 +32,11 @@ import com.bonitasoft.engine.api.ProcessAPI;
 public class ReplayFailedTaskCommand extends ShellCommand {
 
     public static final String COMMAND_NAME = "tools_replay_failed_task";
+    private List<BonitaCompleter> completers;
+
+    public ReplayFailedTaskCommand() {
+        completers = Arrays.asList((BonitaCompleter) new NoParamCompleter("No args"));
+    }
 
     @Override
     public String getName() {
@@ -37,35 +45,40 @@ public class ReplayFailedTaskCommand extends ShellCommand {
 
     @Override
     public boolean execute(List<String> args, ShellContext context) throws Exception {
-        ProcessAPI processAPI = context.getProcessAPI();
+        try {
+            ProcessAPI processAPI = context.getProcessAPI();
 
-        // Search all failed connectors and flag them to be replayed 
-        SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
-        searchOptionsBuilder.filter(ConnectorInstancesSearchDescriptor.STATE, ConnectorState.FAILED.name());
-        SearchResult<ConnectorInstance> searchConnectorInstances = processAPI.searchConnectorInstances(searchOptionsBuilder.done());
-        List<ConnectorInstance> connectorInstances = searchConnectorInstances.getResult();
+            // Search all failed connectors and flag them to be replayed 
+            SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
+            searchOptionsBuilder.filter(ConnectorInstancesSearchDescriptor.STATE, ConnectorState.FAILED.name());
+            SearchResult<ConnectorInstance> searchConnectorInstances = processAPI.searchConnectorInstances(searchOptionsBuilder.done());
+            List<ConnectorInstance> connectorInstances = searchConnectorInstances.getResult();
 
-        Map<Long, ConnectorStateReset> connectorsMap = new HashMap<>();
-        for (ConnectorInstance connectorInstance : connectorInstances) {
-            connectorsMap.put(Long.valueOf(connectorInstance.getId()), ConnectorStateReset.TO_RE_EXECUTE);
+            Map<Long, ConnectorStateReset> connectorsMap = new HashMap<>();
+            for (ConnectorInstance connectorInstance : connectorInstances) {
+                connectorsMap.put(Long.valueOf(connectorInstance.getId()), ConnectorStateReset.TO_RE_EXECUTE);
+            }
+            processAPI.setConnectorInstanceState(connectorsMap);
+
+            // Search failed task and trigger re-execution
+            searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
+            searchOptionsBuilder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, ActivityStates.FAILED_STATE);
+            List<ActivityInstance> failedActivities = processAPI.searchActivities(searchOptionsBuilder.done()).getResult();
+
+            for (ActivityInstance activityInstance : failedActivities) {
+                processAPI.replayActivity(activityInstance.getId());
+            }
+
+            return true;
+        } catch (InvalidSessionException e) {
+            System.err.println("Invalid session. Make sure you are logged in.");
+            return false;
         }
-        processAPI.setConnectorInstanceState(connectorsMap);
-
-        // Search failed task and trigger re-execution
-        searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
-        searchOptionsBuilder.filter(ActivityInstanceSearchDescriptor.STATE_NAME, ActivityStates.FAILED_STATE);
-        List<ActivityInstance> failedActivities = processAPI.searchActivities(searchOptionsBuilder.done()).getResult();
-
-        for (ActivityInstance activityInstance : failedActivities) {
-            processAPI.replayActivity(activityInstance.getId());
-        }
-
-        return true;
     }
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return super.getCompleters();
+        return completers;
     }
 
     @Override

@@ -12,19 +12,14 @@ import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ShellCommand;
-<<<<<<< HEAD
 import org.bonitasoft.shell.command.tools.ReplayFailedTaskCommand;
 import org.bonitasoft.shell.command.tools.SearchLockedCommand;
-import org.bonitasoft.shell.completer.reflect.ReflectCommand;
-=======
-import org.bonitasoft.shell.command.tools.ToolsCommand;
 import org.bonitasoft.shell.completer.reflect.ReflectCommand;
 
 import com.bonitasoft.engine.api.MonitoringAPI;
 import com.bonitasoft.engine.api.PageAPI;
 import com.bonitasoft.engine.api.ReportingAPI;
 import com.bonitasoft.engine.api.ThemeAPI;
->>>>>>> abe3656a4d1549e1fbfe53a240ae5a4b5a76394f
 
 public class BonitaShell extends BaseShell {
 
