@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
+import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.BonitaStringCompleter;
+import org.bonitasoft.shell.completer.SubCommandStringCompleter;
 
 public class ToolsCommand extends ShellCommand {
 
@@ -57,4 +60,10 @@ public class ToolsCommand extends ShellCommand {
         return false;
     }
 
+    @Override
+    public List<BonitaCompleter> getCompleters() {
+        List<ShellCommand> subCommands = Arrays.asList(new ReplayFailedTaskCommand(), new SearchLockedCommand());
+
+        return Arrays.asList(new BonitaStringCompleter(SUB_COMMAND_NAME), new SubCommandStringCompleter(subCommands));
+    }
 }

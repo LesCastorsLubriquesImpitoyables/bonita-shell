@@ -23,6 +23,8 @@ public class ArgumentParser {
 
     private String command;
 
+    private String firstArgument;
+
     private String lastArgument;
 
     private int offset;
@@ -49,6 +51,7 @@ public class ArgumentParser {
             arguments = new ArrayList<String>();
         }
         if (arguments.size() > 0) {
+            firstArgument = arguments.get(0);
             lastArgument = arguments.get(arguments.size() - 1);
             if (arguments.size() > 1) {
                 previousArgument = arguments.get(arguments.size() - 2);
@@ -65,6 +68,10 @@ public class ArgumentParser {
 
     public String getLastArgument() {
         return lastArgument;
+    }
+
+    public String getFirstArgument() {
+        return firstArgument;
     }
 
     public int getLastArgumentIndex() {

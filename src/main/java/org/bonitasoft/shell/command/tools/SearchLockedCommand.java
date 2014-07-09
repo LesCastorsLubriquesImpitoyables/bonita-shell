@@ -2,6 +2,7 @@ package org.bonitasoft.shell.command.tools;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
+import org.bonitasoft.shell.completer.BonitaStringCompleter;
 
 import com.bonitasoft.engine.api.ProcessAPI;
 
@@ -62,7 +64,9 @@ public class SearchLockedCommand extends ShellCommand {
         SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
 
         if ((before != null) && (after != null)) {
-            searchOptionsBuilder.between(org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor.START_DATE, after, before);
+            //FIXME: between doesn't work with date
+            searchOptionsBuilder.between(org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor.START_DATE, Long.valueOf(after.getTime()),
+                    Long.valueOf(before.getTime()));
         }
 
         SearchResult<ProcessInstance> searchProcessInstances = processAPI.searchProcessInstances(searchOptionsBuilder.done());
@@ -84,7 +88,7 @@ public class SearchLockedCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return super.getCompleters();
+        return Arrays.asList((BonitaCompleter) new BonitaStringCompleter("after:"), (BonitaCompleter) new BonitaStringCompleter("before:"));
     }
 
     @Override
