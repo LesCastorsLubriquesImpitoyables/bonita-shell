@@ -62,4 +62,36 @@ public class PrintColor {
         }
     }
 
+    public static final String getGreenBold(final String pText) {
+        return getColorized(pText, Ansi.Color.GREEN, true);
+    }
+
+    public static final String getGreen(final String pText) {
+        return getColorized(pText, Ansi.Color.GREEN, false);
+    }
+
+    public static final String getBlueBold(final String pText) {
+        return getColorized(pText, Ansi.Color.BLUE, true);
+    }
+
+    public static final String getBlue(final String pText) {
+        return getColorized(pText, Ansi.Color.BLUE, false);
+    }
+
+    public static final String getRedBold(final String pText) {
+        return getColorized(pText, Ansi.Color.RED, true);
+    }
+
+    public static final String getRed(final String pText) {
+        return getColorized(pText, Ansi.Color.RED, false);
+    }
+
+    private static String getColorized(final String pText, final Color pColor, final boolean pBold) {
+        if (pBold) {
+            return ansi().bold().fg(pColor).a(pText).reset().toString();
+        } else {
+            return ansi().fg(pColor).a(pText).reset().toString();
+        }
+    }
+
 }
