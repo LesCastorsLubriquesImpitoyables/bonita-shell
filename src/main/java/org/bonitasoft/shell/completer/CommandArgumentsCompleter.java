@@ -54,18 +54,21 @@ public class CommandArgumentsCompleter implements Completer {
                 final ShellCommand clientCommand = commands.get(command);
                 if (clientCommand != null) {
                     final List<BonitaCompleter> completers = clientCommand.getCompleters();
-                        final BonitaCompleter completer = completers.get(Math.min(lastArgumentIndex,completers.size()-1));
-                        if (argumentParser.isLastArgumentCompleted()) {
+                    final BonitaCompleter completer = completers.get(Math.min(lastArgumentIndex, completers.size() - 1));
+                    if (argumentParser.isLastArgumentCompleted()) {
 
-                            CompletionHelper completionHelper = completer.getCompletionHelper();
-                            if (completionHelper != null) {
-                                completionHelper.addHelp(argumentParser, candidates);
+                        CompletionHelper completionHelper = completer.getCompletionHelper();
+                        if (completionHelper != null) {
+                            String help = completionHelper.getHelp(argumentParser);
+                            if (help != null) {
+                                candidates.add("**HELP" + help);
                             }
-                            return (argumentParser.getLastArgument() != null ? argumentParser.getLastArgument().length() : 0) + argumentParser.getOffset();
-                        } else {
-                            final int complete = completer.complete(argumentParser, candidates);
-                            return complete + argumentParser.getOffset();
                         }
+                        return (argumentParser.getLastArgument() != null ? argumentParser.getLastArgument().length() : 0) + argumentParser.getOffset();
+                    } else {
+                        final int complete = completer.complete(argumentParser, candidates);
+                        return complete + argumentParser.getOffset();
+                    }
                 }
             }
         }

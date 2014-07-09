@@ -25,9 +25,29 @@ public abstract class ResolvingStringsCompleter extends StringsCompleter impleme
         return super.complete(buffer, cursor, candidates);
     }
 
-    public int complete(ArgumentParser commandLine, List<CharSequence> candidates){
+    @Override
+    public int complete(ArgumentParser commandLine, List<CharSequence> candidates) {
         String lastArgument = commandLine.getLastArgument();
-        return complete(lastArgument,lastArgument != null ? lastArgument.length():0, candidates);
+        return complete(lastArgument, lastArgument != null ? lastArgument.length() : 0, candidates);
+    }
+
+    @Override
+    public CompletionHelper getCompletionHelper() {
+        return new CompletionHelper() {
+
+            @Override
+            public String getHelp(ArgumentParser argumentParser) {
+                StringBuilder possibleArgs = new StringBuilder();
+                for (String string : resolveStrings()) {
+                    possibleArgs.append(string).append(", ");
+                }
+                if (possibleArgs.length() > 2) {
+                    return possibleArgs.substring(0, possibleArgs.length() - 2);
+                } else {
+                    return "";
+                }
+            }
+        };
     }
 
     /**

@@ -7,10 +7,8 @@ import java.util.List;
  */
 public interface BonitaCompleter {
 
-
-        int complete(ArgumentParser commandLine, List<CharSequence> candidates);
+    int complete(ArgumentParser commandLine, List<CharSequence> candidates);
 
     public CompletionHelper getCompletionHelper();
-
 
 }

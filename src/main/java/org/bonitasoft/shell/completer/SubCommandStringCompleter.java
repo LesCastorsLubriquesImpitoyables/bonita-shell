@@ -17,8 +17,6 @@ public class SubCommandStringCompleter implements BonitaCompleter {
         // Get sub command name (firsts chars) typed by user
         String firstArgument = commandLine.getFirstArgument();
 
-        System.out.println("firstArgName: " + firstArgument);
-
         // Iterate over all sub command
         for (ShellCommand shellCommand : subCommands) {
             // Search sub command match user typing
@@ -29,6 +27,11 @@ public class SubCommandStringCompleter implements BonitaCompleter {
         }
 
         return 0;
+    }
+
+    @Override
+    public CompletionHelper getCompletionHelper() {
+        return null;
     }
 
 }

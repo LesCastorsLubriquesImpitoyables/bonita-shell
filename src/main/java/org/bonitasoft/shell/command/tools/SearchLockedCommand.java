@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.ShellContext;
@@ -63,32 +64,42 @@ public class SearchLockedCommand extends ShellCommand {
         // Search all process instance within specified time frame
         SearchOptionsBuilder searchOptionsBuilder = new SearchOptionsBuilder(0, Integer.MAX_VALUE);
 
+        System.out.println("before: " + before + " after:" + after);
+
         if ((before != null) && (after != null)) {
-            //FIXME: between doesn't work with date
-            searchOptionsBuilder.between(org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor.START_DATE, Long.valueOf(after.getTime()),
+            searchOptionsBuilder.between(ProcessInstanceSearchDescriptor.START_DATE, Long.valueOf(after.getTime()),
                     Long.valueOf(before.getTime()));
+        } else if (before != null) {
+            searchOptionsBuilder.lessOrEquals(ProcessInstanceSearchDescriptor.START_DATE, Long.valueOf(before.getTime()));
+        } else if (after != null) {
+            searchOptionsBuilder.greaterOrEquals(ProcessInstanceSearchDescriptor.START_DATE, Long.valueOf(after.getTime()));
         }
 
         SearchResult<ProcessInstance> searchProcessInstances = processAPI.searchProcessInstances(searchOptionsBuilder.done());
         List<ProcessInstance> processInstances = searchProcessInstances.getResult();
 
+        StringBuilder display = new StringBuilder();
         for (ProcessInstance processInstance : processInstances) {
-            StringBuilder display = new StringBuilder();
-            display.append("##############################################################################");
-            display.append("Process definition name: ");
-            display.append("Process definition version: ");
-            display.append("Process instance id: ").append(processInstance.getId());
-            display.append("Process instance state: ").append(processInstance.getState());
-            display.append("Process instance start date: ").append(processInstance.getStartDate());
-            display.append("##############################################################################");
+            display.append("\n##############################################################################");
+            display.append("\nProcess definition name: ");
+            display.append("\nProcess definition version: ");
+            display.append("\nProcess instance id: ").append(processInstance.getId());
+            display.append("\nProcess instance state: ").append(processInstance.getState());
+            display.append("\nProcess instance start date: ").append(processInstance.getStartDate());
+            display.append("\n##############################################################################");
         }
+
+        System.out.println(display.toString());
+
+        //login install install
+        //tools search_locked after:2014/07/07 before:2014/08/01
 
         return true;
     }
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.asList((BonitaCompleter) new BonitaStringCompleter("after:"), (BonitaCompleter) new BonitaStringCompleter("before:"));
+        return Arrays.asList((BonitaCompleter) new BonitaStringCompleter("after:", "before:"), (BonitaCompleter) new BonitaStringCompleter("before:"));
     }
 
     @Override
