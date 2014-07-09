@@ -73,19 +73,16 @@ public class ShellContext {
         return TenantAPIAccessor.getProfileAPI(session);
     }
 
-    public APISession getSession() {
-        return session;
-    }
 
     @Deprecated
     public Object getApi(final String apiName) throws Exception {
-        if (apiName.equals("process")) {
+        if (apiName.equals("ProcessAPI")) {
             return getProcessAPI();
         }
-        if (apiName.equals("identity")) {
+        if (apiName.equals("IdentityAPI")) {
             return getIdentityAPI();
         }
-        if (apiName.equals("profile")) {
+        if (apiName.equals("ProfileAPI")) {
             return getProfileAPI();
         }
         throw new IllegalArgumentException("Unknown API: " + apiName);
