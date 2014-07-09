@@ -183,6 +183,9 @@ public class ReflectCommand extends ShellCommand {
 
     public static String printResult(Object result) {
         String string = "";
+        if(result == null) {
+            return "done";
+        }
         TypeHandler completer = TypeCompleters.getCompleter(result.getClass());
         if(completer != null){
             string = completer.getString(result);
