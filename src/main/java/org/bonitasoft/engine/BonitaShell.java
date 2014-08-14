@@ -40,7 +40,7 @@ public class BonitaShell extends BaseShell {
 
     @Override
     protected List<ShellCommand> initShellCommands() throws Exception {
-        final ArrayList<ShellCommand> commands = new ArrayList<>(4);
+        final ArrayList<ShellCommand> commands = new ArrayList<ShellCommand>(4);
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
         commands.add(new ReflectCommand(ProcessAPI.class));

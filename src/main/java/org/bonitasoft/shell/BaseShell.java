@@ -31,7 +31,7 @@ import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHand
  * Implement abstract methods
  * to run it just execute (e.g. in a main)
  * shell.run();
- * 
+ *
  * @author Baptiste Mesta
  */
 public abstract class BaseShell {
@@ -48,7 +48,7 @@ public abstract class BaseShell {
 
     public void init() throws Exception {
         final List<ShellCommand> commandList = initShellCommands();
-        commands = new HashMap<>();
+        commands = new HashMap<String, ShellCommand>();
         for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
@@ -77,7 +77,7 @@ public abstract class BaseShell {
 
     /**
      * called by {@link BaseShell} when the shell is exited
-     * 
+     *
      * @throws Exception
      */
     public void destroy() throws Exception {
@@ -129,7 +129,7 @@ public abstract class BaseShell {
 
     /**
      * used to parse arguments of the line
-     * 
+     *
      * @param line
      * @return
      */
@@ -140,7 +140,7 @@ public abstract class BaseShell {
             final String string = asList.get(i);
             asList.set(i, string.replaceAll("%SPACE%", " "));
         }
-        return new ArrayList<>(asList);
+        return new ArrayList<String>(asList);
     }
 
     protected void initHome() throws IOException {
