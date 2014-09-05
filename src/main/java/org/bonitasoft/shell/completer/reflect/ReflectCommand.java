@@ -170,10 +170,11 @@ public class ReflectCommand extends ShellCommand {
                 if (method != null) {
                     final Object result = invokeMethod(api, method, parameters);
                     PrintColor.printGreenBold(printResult(result));
+                    return true;
                 }
             } catch (final Exception e) {
                 if (!iterator.hasNext()) {
-                    InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                    final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
                     PrintColor.printRedBold(invocationTargetException.getTargetException().getMessage());
                 }
             }
@@ -182,12 +183,12 @@ public class ReflectCommand extends ShellCommand {
         return false;
     }
 
-    public static String printResult(Object result) {
+    public static String printResult(final Object result) {
         String string = "";
         if(result == null) {
             return "done";
         }
-        TypeHandler completer = TypeCompleters.getCompleter(result.getClass());
+        final TypeHandler completer = TypeCompleters.getCompleter(result.getClass());
         if(completer != null){
             string = completer.getString(result);
         }else{
@@ -266,7 +267,7 @@ public class ReflectCommand extends ShellCommand {
     }
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
-        TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
+        final TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
         if(completer == null){
             return false;
         }
