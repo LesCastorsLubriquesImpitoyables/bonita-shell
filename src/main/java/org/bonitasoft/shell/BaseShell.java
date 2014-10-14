@@ -95,6 +95,8 @@ public abstract class BaseShell {
         reader.setCompletionHandler(new ReflectCandidateListCompletionHandler());
         reader.addCompleter(commandArgumentsCompleter);
 
+        new ShellInitializer();
+
         String line;
         while ((line = reader.readLine("\n" + getPrompt())) != null) {
             final List<String> args = parse(line);

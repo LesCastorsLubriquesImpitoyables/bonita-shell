@@ -34,7 +34,7 @@ public class BusinessArchiveTypeCompleter extends FileNameCompleter implements B
         try {
             return BusinessArchiveFactory.readBusinessArchive(file);
         } catch (Exception e) {
-            throw new IllegalArgumentException("The parameter should point to a valid Business Archive: " + argument);
+            throw new IllegalArgumentException("The parameter should point to a valid Business Archive: " + argument+",issue is "+e.getMessage());
         }
 
     }
