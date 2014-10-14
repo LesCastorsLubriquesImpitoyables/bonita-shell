@@ -174,13 +174,15 @@ public class ReflectCommand extends ShellCommand {
                 }
             } catch (Throwable e) {
                 if (!iterator.hasNext()) {
-                    if(e instanceof InvocationTargetException){
-                        final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                    if(e instanceof  InvocationTargetException){
+                    final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
                         e = invocationTargetException.getTargetException();
                     }
-                    PrintColor.printRedBold(e.getMessage());
+                        PrintColor.printRedBold(e.getMessage());
+
                 }
             }
+        }
         }
 
         return false;
