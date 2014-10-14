@@ -1,8 +1,18 @@
 /*
- * Copyright (c) 2002-2012, the original author or authors.
- * This software is distributable under the BSD license. See the terms of the
- * BSD license in the documentation provided with this software.
- * http://www.opensource.org/licenses/bsd-license.php
+ *
+ * Copyright (C) 2014 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2.0 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package org.bonitasoft.shell;
 
@@ -34,60 +44,45 @@ import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHand
  *
  * @author Baptiste Mesta
  */
-public abstract class BaseShell {
+public class Shell {
 
     private static final String PROMPT = "bonita> ";
-
-    static final String HELP = "help";
 
     private HashMap<String, ShellCommand> commands;
 
     private HelpCommand helpCommand;
 
-    private File homeFoler;
+    private ShellInitializer initializer;
+
+    public Shell(ShellInitializer initializer) {
+        this.initializer = initializer;
+    }
 
     public void init() throws Exception {
-        final List<ShellCommand> commandList = initShellCommands();
+        printWelcomeMessage();
+        initializer.initialize();
+        final List<ShellCommand> commandList = initializer.getShellCommands();
         commands = new HashMap<String, ShellCommand>();
         for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
-        helpCommand = getHelpCommand();
-        if (helpCommand != null) {
-            commands.put(helpCommand.getName(), helpCommand);
-        }
+        helpCommand = new HelpCommand(commands);
+        commands.put(helpCommand.getName(), helpCommand);
         PrintColor.init();
-        initHome();
 
     }
 
-    /**
-     * return the help command used
-     * Can be overridden
-     */
-    protected HelpCommand getHelpCommand() {
-        return new HelpCommand(commands);
-    }
 
     /**
-     * @return list of commands contributed to the shell
-     * @throws Exception
-     */
-    protected abstract List<ShellCommand> initShellCommands() throws Exception;
-
-    /**
-     * called by {@link BaseShell} when the shell is exited
+     * called by {@link Shell} when the shell is exited
      *
      * @throws Exception
      */
     public void destroy() throws Exception {
-        cleanHome();
         PrintColor.clean();
     }
 
     public void run(final InputStream in, final OutputStream out) throws Exception {
-        init();
-        printWelcomeMessage();
         final ConsoleReader reader = new ConsoleReader(in, out);
         reader.setBellEnabled(false);
         final CommandArgumentsCompleter commandArgumentsCompleter = new CommandArgumentsCompleter(commands);
@@ -95,7 +90,6 @@ public abstract class BaseShell {
         reader.setCompletionHandler(new ReflectCandidateListCompletionHandler());
         reader.addCompleter(commandArgumentsCompleter);
 
-        new ShellInitializer();
 
         String line;
         while ((line = reader.readLine("\n" + getPrompt())) != null) {
@@ -127,7 +121,9 @@ public abstract class BaseShell {
     /**
      * @return
      */
-    protected abstract ShellContext getContext();
+    protected ShellContext getContext() {
+        return ShellContext.getInstance();
+    }
 
     /**
      * used to parse arguments of the line
@@ -143,48 +139,6 @@ public abstract class BaseShell {
             asList.set(i, string.replaceAll("%SPACE%", " "));
         }
         return new ArrayList<String>(asList);
-    }
-
-    protected void initHome() throws IOException {
-        homeFoler = null;
-        if (System.getProperty("bonita.home") == null) {
-            homeFoler = new File("home");
-            FileUtils.deleteDirectory(homeFoler);
-            homeFoler.mkdir();
-            File file = new File(homeFoler, "client");
-            file.mkdir();
-            file = new File(file, "conf");
-            file.mkdir();
-            file = new File(file, "bonita-client.properties");
-            file.createNewFile();
-            final Properties properties = new Properties();
-            properties.load(this.getClass().getResourceAsStream(
-                    "/bonita-client.properties"));
-            final String application = System.getProperty("shell.application");
-            if (application != null) {
-                properties.put("application.name", application);
-            }
-            final String host = System.getProperty("shell.host");
-            final String port = System.getProperty("shell.port");
-            properties.put("server.url", "http://"
-                    + (host != null ? host : "localhost") + ":"
-                    + (port != null ? port : "8080"));
-
-            final FileWriter writer = new FileWriter(file);
-            try {
-                properties.store(writer, "Server configuration");
-            } finally {
-                writer.close();
-            }
-            System.out.println("Using server configuration " + properties);
-            System.setProperty("bonita.home", homeFoler.getAbsolutePath());
-        }
-    }
-
-    protected void cleanHome() throws IOException {
-        if (homeFoler != null) {
-            FileUtils.deleteDirectory(homeFoler);
-        }
     }
 
     protected String getPrompt() {

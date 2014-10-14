@@ -1,15 +1,15 @@
 package org.bonitasoft.shell.completer.type;
 
-import jline.console.completer.FileNameCompleter;
-import org.apache.commons.io.IOUtils;
-import org.bonitasoft.shell.completer.ArgumentParser;
-import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.CompletionHelper;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+
+import jline.console.completer.FileNameCompleter;
+
+import org.apache.commons.io.IOUtils;
+import org.bonitasoft.shell.completer.ArgumentParser;
+import org.bonitasoft.shell.completer.CompletionHelper;
 
 /**
  * Created by baptiste on 08/07/14.

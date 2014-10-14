@@ -103,7 +103,11 @@ public class ReflectCommand extends ShellCommand {
                             parameterNames.add(matcherParam.group(3));
                         }
                     }
-                    helpHashMap.put(getMethodOfDeclaration(methodMap, name, parameterTypes), new MethodHelp(description, parameterNames));
+                    Method methodOfDeclaration = getMethodOfDeclaration(methodMap, name, parameterTypes);
+                    if(methodOfDeclaration != null){
+                        //not in the binaries but in the javadoc..
+                        helpHashMap.put(methodOfDeclaration, new MethodHelp(description, parameterNames));
+                    }
                 }
             }
         }
@@ -112,25 +116,27 @@ public class ReflectCommand extends ShellCommand {
 
     private Method getMethodOfDeclaration(final Map<String, List<Method>> methodMap, final String name, final List<String> parameterTypesAsString) {
         final List<Method> methodList = methodMap.get(name);
-        for (final Method method : methodList) {
-            final Class<?>[] parameterTypes = method.getParameterTypes();;
-            if (parameterTypes.length == parameterTypesAsString.size()) {
-                boolean isOk = true;
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    final String typeParameter = parameterTypesAsString.get(i);
-                    final Class<?> parameterType = parameterTypes[i];
+        if (methodList != null){
+            for (final Method method : methodList) {
+                final Class<?>[] parameterTypes = method.getParameterTypes();
+                if (parameterTypes.length == parameterTypesAsString.size()) {
+                    boolean isOk = true;
+                    for (int i = 0; i < parameterTypes.length; i++) {
+                        final String typeParameter = parameterTypesAsString.get(i);
+                        final Class<?> parameterType = parameterTypes[i];
 
-                    if (!parameterType.getSimpleName().equals(typeParameter)) {
-                        isOk = false;
-                        break;
+                        if (!parameterType.getSimpleName().equals(typeParameter)) {
+                            isOk = false;
+                            break;
+                        }
                     }
-                }
-                if (isOk) {
-                    return method;
+                    if (isOk) {
+                        return method;
+                    }
                 }
             }
         }
-        throw new IllegalStateException("the method " + name + " does not exists in the type");
+        return null;
     }
 
     private List<Document> getJavadocClasses(final List<Class<?>> allSuperClass) {
@@ -174,10 +180,10 @@ public class ReflectCommand extends ShellCommand {
                 }
             } catch (final Exception e) {
                 if (!iterator.hasNext()) {
-                    if(e instanceof  InvocationTargetException){
+                    if (e instanceof InvocationTargetException) {
                         final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
                         PrintColor.printRedBold(invocationTargetException.getTargetException().getMessage());
-                    }else{
+                    } else {
                         PrintColor.printRedBold(e.getMessage());
 
                     }
@@ -190,13 +196,13 @@ public class ReflectCommand extends ShellCommand {
 
     public static String printResult(final Object result) {
         String string = "";
-        if(result == null) {
+        if (result == null) {
             return "done";
         }
         final TypeHandler completer = TypeCompleters.getCompleter(result.getClass());
-        if(completer != null){
+        if (completer != null) {
             string = completer.getString(result);
-        }else{
+        } else {
             string = String.valueOf(result);
         }
         return string;
@@ -212,7 +218,7 @@ public class ReflectCommand extends ShellCommand {
      * @throws IllegalArgumentException
      */
     private Object invokeMethod(final Object api, final Method method, final List<String> parameters) throws IllegalArgumentException, IllegalAccessException,
-    InvocationTargetException {
+            InvocationTargetException {
         return method.invoke(api, castParameters(method.getParameterTypes(), parameters));
     }
 
@@ -273,7 +279,7 @@ public class ReflectCommand extends ShellCommand {
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
         final TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
-        if(completer == null){
+        if (completer == null) {
             return false;
         }
         return completer.isCastableTo(parameterAsString);
@@ -308,10 +314,10 @@ public class ReflectCommand extends ShellCommand {
     public String getMethodHelp(final String methodName) {
         final List<Method> possibleMethods = methodMap.get(methodName);
         String help = "";
-        if(possibleMethods != null){
+        if (possibleMethods != null) {
             for (final Method possibleMethod : possibleMethods) {
                 final MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
-                if(methodHelp != null){
+                if (methodHelp != null) {
                     final List<String> argumentNames = methodHelp.getArgumentNames();
                     help += possibleMethod.getName() + "(";
                     final Class<?>[] parameterTypes = possibleMethod.getParameterTypes();
@@ -322,7 +328,7 @@ public class ReflectCommand extends ShellCommand {
                         }
                     }
                     help += ")\n";
-                    help +=  methodHelp.getComment();
+                    help += methodHelp.getComment();
                     help += "\n\n";
                 }
             }

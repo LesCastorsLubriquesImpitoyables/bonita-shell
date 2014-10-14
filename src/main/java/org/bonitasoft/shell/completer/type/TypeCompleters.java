@@ -1,14 +1,16 @@
 package org.bonitasoft.shell.completer.type;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchResult;
-import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
-
-import java.util.*;
 
 /**
  * Created by baptiste on 08/07/14.

@@ -1,6 +1,5 @@
 package org.bonitasoft.shell.completer.reflect;
 
-import org.bonitasoft.shell.completer.reflect.ReflectCommand;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.CompletionHelper;
 

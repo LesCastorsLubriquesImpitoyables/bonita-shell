@@ -1,15 +1,12 @@
 package org.bonitasoft.shell.completer.type;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.CompletionHelper;
-import org.bonitasoft.shell.completer.ResolvingStringsCompleter;
 
 /**
  * Created by baptiste on 08/07/14.

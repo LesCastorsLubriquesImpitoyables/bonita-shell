@@ -14,8 +14,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.bonitasoft.shell;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.bonitasoft.shell.command.ShellCommand;
 
 /**
  *
@@ -23,8 +27,15 @@ package org.bonitasoft.shell;
  * It detects configuration ans if there is none ask to download drivers, bonita version
  * @author Baptiste Mesta
  */
-public class ShellInitializer {
+public interface ShellInitializer {
 
 
+    /**
+     * @return list of commands contributed to the shell
+     * @throws Exception
+     */
+    List<ShellCommand> getShellCommands() throws Exception;
 
+
+    void initialize() throws IOException;
 }

@@ -96,7 +96,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>org.bonitasoft.engine.BonitaShell</mainClass>
+                            <mainClass>org.bonitasoft.shell.BonitaShell</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -129,7 +129,7 @@
                                 <transformers>
                                     <transformer
                                             implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                        <mainClass>org.bonitasoft.engine.BonitaShell</mainClass>
+                                        <mainClass>org.bonitasoft.shell.BonitaShell</mainClass>
                                     </transformer>
                                 </transformers>
                             </configuration>

@@ -1,17 +1,13 @@
 package org.bonitasoft.shell.completer.type;
 
-import java.io.File;
 import java.util.List;
 
 import jline.console.completer.FileNameCompleter;
 
-import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.CompletionHelper;
-
-import com.bonitasoft.engine.bpm.bar.BusinessArchiveFactory;
 
 /**
  * Created by baptiste on 08/07/14.

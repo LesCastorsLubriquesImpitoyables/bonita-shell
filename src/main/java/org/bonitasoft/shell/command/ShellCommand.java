@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import jline.console.completer.Completer;
-
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 

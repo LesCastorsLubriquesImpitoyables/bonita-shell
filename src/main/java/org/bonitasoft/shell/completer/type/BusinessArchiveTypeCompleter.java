@@ -1,16 +1,16 @@
 package org.bonitasoft.shell.completer.type;
 
-import com.bonitasoft.engine.bpm.bar.BusinessArchiveFactory;
+import java.io.File;
+import java.util.List;
+
 import jline.console.completer.FileNameCompleter;
+
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
-import org.bonitasoft.engine.bpm.bar.InvalidBusinessArchiveFormatException;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.CompletionHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import com.bonitasoft.engine.bpm.bar.BusinessArchiveFactory;
 
 /**
  * Created by baptiste on 08/07/14.

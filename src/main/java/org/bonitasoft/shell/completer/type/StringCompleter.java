@@ -1,11 +1,9 @@
 package org.bonitasoft.shell.completer.type;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.CompletionHelper;
-import org.bonitasoft.shell.completer.ResolvingStringsCompleter;
 
 /**
  * Created by baptiste on 08/07/14.
