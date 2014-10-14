@@ -1,8 +1,18 @@
 /*
- * Copyright (c) 2002-2012, the original author or authors.
- * This software is distributable under the BSD license. See the terms of the
- * BSD license in the documentation provided with this software.
- * http://www.opensource.org/licenses/bsd-license.php
+ *
+ * Copyright (C) 2014 BonitaSoft S.A.
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2.0 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package org.bonitasoft.shell;
 
@@ -31,27 +41,30 @@ import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHand
  *
  * @author Baptiste Mesta
  */
-public abstract class BaseShell {
+public class Shell {
 
     private static final String PROMPT = "bonita> ";
-
-    static final String HELP = "help";
 
     private HashMap<String, ShellCommand> commands;
 
     private HelpCommand helpCommand;
 
+    private ShellInitializer initializer;
+
+    public Shell(ShellInitializer initializer) {
+        this.initializer = initializer;
+    }
 
     public void init() throws Exception {
-        final List<ShellCommand> commandList = initShellCommands();
+        printWelcomeMessage();
+        initializer.initialize();
+        final List<ShellCommand> commandList = initializer.getShellCommands();
         commands = new HashMap<String, ShellCommand>();
         for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
-        helpCommand = getHelpCommand();
-        if (helpCommand != null) {
+        helpCommand = new HelpCommand(commands);
             commands.put(helpCommand.getName(), helpCommand);
-        }
         PrintColor.init();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put("application.name","bonita");
@@ -62,22 +75,9 @@ public abstract class BaseShell {
 
     }
 
-    /**
-     * return the help command used
-     * Can be overridden
-     */
-    protected HelpCommand getHelpCommand() {
-        return new HelpCommand(commands);
-    }
 
     /**
-     * @return list of commands contributed to the shell
-     * @throws Exception
-     */
-    protected abstract List<ShellCommand> initShellCommands() throws Exception;
-
-    /**
-     * called by {@link BaseShell} when the shell is exited
+     * called by {@link Shell} when the shell is exited
      *
      * @throws Exception
      */
@@ -86,8 +86,6 @@ public abstract class BaseShell {
     }
 
     public void run(final InputStream in, final OutputStream out) throws Exception {
-        init();
-        printWelcomeMessage();
         final ConsoleReader reader = new ConsoleReader(in, out);
         reader.setBellEnabled(false);
         final CommandArgumentsCompleter commandArgumentsCompleter = new CommandArgumentsCompleter(commands);
@@ -95,7 +93,6 @@ public abstract class BaseShell {
         reader.setCompletionHandler(new ReflectCandidateListCompletionHandler());
         reader.addCompleter(commandArgumentsCompleter);
 
-        new ShellInitializer();
 
         String line;
         while ((line = reader.readLine("\n" + getPrompt())) != null) {
@@ -127,7 +124,9 @@ public abstract class BaseShell {
     /**
      * @return
      */
-    protected abstract ShellContext getContext();
+    protected ShellContext getContext() {
+        return ShellContext.getInstance();
+    }
 
     /**
      * used to parse arguments of the line
@@ -144,7 +143,6 @@ public abstract class BaseShell {
         }
         return new ArrayList<String>(asList);
     }
-
 
     protected String getPrompt() {
         return PrintColor.getRedBold(getContext().getLoggedUser()) + "@" + PrintColor.getBlue(PROMPT);

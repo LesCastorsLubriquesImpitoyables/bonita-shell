@@ -1,12 +1,11 @@
 package org.bonitasoft.shell.completer.reflect;
 
-import org.bonitasoft.shell.completer.reflect.ReflectCommand;
+import java.util.List;
+
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.CompletionHelper;
 import org.bonitasoft.shell.completer.type.TypeCompleters;
-
-import java.util.List;
 
 /**
  * Created by baptiste on 08/07/14.
@@ -42,4 +41,3 @@ public class ReflectMethodArgumentCompleter implements BonitaCompleter {
         return null;
     }
 }
-

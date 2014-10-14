@@ -5,7 +5,6 @@ import java.util.List;
 
 import jline.console.completer.FileNameCompleter;
 
-import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.BonitaCompleter;
