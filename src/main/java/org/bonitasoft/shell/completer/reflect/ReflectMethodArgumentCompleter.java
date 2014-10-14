@@ -12,9 +12,9 @@ import org.bonitasoft.shell.completer.type.TypeCompleters;
  */
 public class ReflectMethodArgumentCompleter implements BonitaCompleter {
 
-    private ReflectCommand command;
+    private ReflectMethodCommand command;
 
-    public ReflectMethodArgumentCompleter(ReflectCommand command) {
+    public ReflectMethodArgumentCompleter(ReflectMethodCommand command) {
         this.command = command;
     }
 
@@ -22,12 +22,9 @@ public class ReflectMethodArgumentCompleter implements BonitaCompleter {
     @Override
     public int complete(ArgumentParser commandLine, List<CharSequence> candidates) {
 
-        ReflectMethodArgumentParser parser = new ReflectMethodArgumentParser(commandLine);
+        int index = commandLine.getLastArgumentIndex();
 
-        String methodName = parser.getMethodName();
-        int index = parser.getArgumentIndex();
-
-        List<Class<?>> types = command.getArgumentType(methodName, index);
+        List<Class<?>> types = command.getArgumentType(index);
 
         BonitaCompleter typeCompleter = TypeCompleters.getCompleter(types);
         if(typeCompleter == null){
@@ -38,6 +35,6 @@ public class ReflectMethodArgumentCompleter implements BonitaCompleter {
 
     @Override
     public CompletionHelper getCompletionHelper() {
-        return null;
+        return new ReflectMethodCommandCompletionHelper(command);
     }
 }

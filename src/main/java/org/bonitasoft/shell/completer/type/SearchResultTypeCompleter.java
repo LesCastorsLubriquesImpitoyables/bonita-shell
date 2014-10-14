@@ -9,7 +9,7 @@ import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.CompletionHelper;
-import org.bonitasoft.shell.completer.reflect.ReflectCommand;
+import org.bonitasoft.shell.completer.reflect.ReflectMethodCommand;
 
 /**
  * Created by baptiste on 08/07/14.
@@ -41,7 +41,7 @@ public class SearchResultTypeCompleter extends FileNameCompleter implements Boni
         String print = "Search result ("+result.getCount()+"):\n";
         List<? extends Serializable> elements = result.getResult();
         for (Serializable element : elements) {
-            print += " * " + ReflectCommand.printResult(element)+"\n";
+            print += " * " + ReflectMethodCommand.printResult(element)+"\n";
         }
         return print;
     }
