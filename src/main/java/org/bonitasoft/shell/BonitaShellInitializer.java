@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This program is free software: you can redistribute it and/or modify
@@ -12,26 +11,26 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package org.bonitasoft.shell;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
-import jline.console.ConsoleReader;
 import org.bonitasoft.engine.api.ApiAccessType;
+import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.util.APITypeManager;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ShellCommand;
-import org.bonitasoft.shell.completer.reflect.ReflectCommand;
+import org.bonitasoft.shell.completer.reflect.ReflectCommandFactory;
 
 /**
  * @author Baptiste Mesta
@@ -51,11 +50,12 @@ public class BonitaShellInitializer implements ShellInitializer {
     }
 
     @Override
-    public void initialize() throws IOException {
+    public void initialize() throws Exception {
         commands = new ArrayList<ShellCommand>();
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
-        commands.add(new ReflectCommand(ProcessAPI.class));
+        commands.addAll(new ReflectCommandFactory().createCommands(Arrays.asList(ProcessAPI.class.getName(),
+                IdentityAPI.class.getName())));
         initHome();
         login();
 
@@ -64,12 +64,12 @@ public class BonitaShellInitializer implements ShellInitializer {
     private void login() {
         ShellContext instance = ShellContext.getInstance();
         String username = config.getProperty("username");
-        if(username != null){
-            System.out.println("Enter password for "+username);
+        if (username != null) {
+            System.out.println("Enter password for " + username);
             Scanner s = new Scanner(System.in);
             String next = s.next();
             try {
-                instance.login(username,next);
+                instance.login(username, next);
             } catch (Exception e) {
                 System.out.println("Wrong credential, login manually");
             }
@@ -82,38 +82,39 @@ public class BonitaShellInitializer implements ShellInitializer {
             map.put(name, config.getProperty(name));
         }
         APITypeManager.setAPITypeAndParams(ApiAccessType.valueOf(config.getProperty("org.bonitasoft.engine.api-type")), map);
-        /*File homeFoler = null;
-        if (System.getProperty("bonita.home") == null) {
-            homeFoler = new File("home");
-            FileUtils.deleteDirectory(homeFoler);
-            homeFoler.mkdir();
-            File file = new File(homeFoler, "client");
-            file.mkdir();
-            file = new File(file, "conf");
-            file.mkdir();
-            file = new File(file, "bonita-client.properties");
-            file.createNewFile();
-            final Properties properties = new Properties();
-            properties.load(this.getClass().getResourceAsStream(
-                    "/bonita-client.properties"));
-            final String application = System.getProperty("shell.application");
-            if (application != null) {
-                properties.put("application.name", application);
-            }
-            final String host = System.getProperty("shell.host");
-            final String port = System.getProperty("shell.port");
-            properties.put("server.url", "http://"
-                    + (host != null ? host : "localhost") + ":"
-                    + (port != null ? port : "8080"));
-
-            final FileWriter writer = new FileWriter(file);
-            try {
-                properties.store(writer, "Server configuration");
-            } finally {
-                writer.close();
-            }
-            System.out.println("Using server configuration " + properties);
-            System.setProperty("bonita.home", homeFoler.getAbsolutePath());
-        }*/
+        /*
+         * File homeFoler = null;
+         * if (System.getProperty("bonita.home") == null) {
+         * homeFoler = new File("home");
+         * FileUtils.deleteDirectory(homeFoler);
+         * homeFoler.mkdir();
+         * File file = new File(homeFoler, "client");
+         * file.mkdir();
+         * file = new File(file, "conf");
+         * file.mkdir();
+         * file = new File(file, "bonita-client.properties");
+         * file.createNewFile();
+         * final Properties properties = new Properties();
+         * properties.load(this.getClass().getResourceAsStream(
+         * "/bonita-client.properties"));
+         * final String application = System.getProperty("shell.application");
+         * if (application != null) {
+         * properties.put("application.name", application);
+         * }
+         * final String host = System.getProperty("shell.host");
+         * final String port = System.getProperty("shell.port");
+         * properties.put("server.url", "http://"
+         * + (host != null ? host : "localhost") + ":"
+         * + (port != null ? port : "8080"));
+         * final FileWriter writer = new FileWriter(file);
+         * try {
+         * properties.store(writer, "Server configuration");
+         * } finally {
+         * writer.close();
+         * }
+         * System.out.println("Using server configuration " + properties);
+         * System.setProperty("bonita.home", homeFoler.getAbsolutePath());
+         * }
+         */
     }
 }
