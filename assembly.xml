@@ -45,8 +45,9 @@
         <dependencySet>
             <outputDirectory>bonita</outputDirectory>
             <includes>
-                <include>org.bonitasoft*</include>
-                <include>com.bonitasoft*</include>
+                <include>*:bonita-common-sp</include>
+                <include>*:bonita-client-sp</include>
+                <include>*:bonita-global-javadoc</include>
             </includes>
         </dependencySet>
     </dependencySets>

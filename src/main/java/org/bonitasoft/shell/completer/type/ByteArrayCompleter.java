@@ -53,13 +53,12 @@ public class ByteArrayCompleter extends FileNameCompleter implements TypeHandler
     @Override
     public String getString(byte[] result) {
         try {
-            File bonitaResult = File.createTempFile("bonitaResult", ".tmp");
-            FileUtils.writeByteArrayToFile(bonitaResult,result);
-            return bonitaResult.getAbsolutePath();
+            File tempFile = File.createTempFile("shell-result", ".tmp");
+            FileUtils.writeByteArrayToFile(tempFile, result);
+            return "Result was saved to "+tempFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
-        };
-
+        }
         return String.valueOf(result);
     }
 }
