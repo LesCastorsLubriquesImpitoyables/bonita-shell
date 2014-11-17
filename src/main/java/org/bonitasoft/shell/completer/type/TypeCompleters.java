@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bonitasoft.engine.reporting.impl.ReportImpl;
+import org.bonitasoft.engine.bpm.BaseElement;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
@@ -38,6 +40,7 @@ public class TypeCompleters {
         completers.put(ProcessDefinition.class, new ProcessDefinitionTypeCompleter());
         completers.put(SearchResult.class, new SearchResultTypeCompleter());
         completers.put(ProcessDeploymentInfo.class, new ProcessDeploymentInfoTypeCompleter());
+        completers.put(BaseElement.class, new BaseElementTypeCompleter());
     }
 
 

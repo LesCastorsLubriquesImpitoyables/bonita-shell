@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
+import com.bonitasoft.engine.api.ReportingAPI;
 import org.bonitasoft.engine.api.ApiAccessType;
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.ProcessAPI;
@@ -55,9 +56,16 @@ public class BonitaShellInitializer implements ShellInitializer {
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
         commands.addAll(new ReflectCommandFactory().createCommands(Arrays.asList(ProcessAPI.class.getName(),
-                IdentityAPI.class.getName())));
+                IdentityAPI.class.getName(), ReportingAPI.class.getName())));
         initHome();
+        initiLib();
         login();
+
+    }
+
+    private void initiLib() {
+        Scanner s = new Scanner(System.in);
+        String next = s.next();
 
     }
 

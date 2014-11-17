@@ -7,6 +7,7 @@ import java.util.List;
 
 import jline.console.completer.FileNameCompleter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.shell.completer.ArgumentParser;
 import org.bonitasoft.shell.completer.CompletionHelper;
@@ -52,6 +53,13 @@ public class ByteArrayCompleter extends FileNameCompleter implements TypeHandler
 
     @Override
     public String getString(byte[] result) {
+        try {
+            File tempFile = File.createTempFile("shell-result", ".tmp");
+            FileUtils.writeByteArrayToFile(tempFile, result);
+            return "Result was saved to "+tempFile.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return String.valueOf(result);
     }
 }
