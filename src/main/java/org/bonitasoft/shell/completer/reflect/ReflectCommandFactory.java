@@ -58,22 +58,20 @@ public class ReflectCommandFactory {
         String apiName = apiClass.getSimpleName();
         Method[] methods = apiClass.getMethods();
         HashMap<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
-        final HashSet<String> hashSet = new HashSet<String>();
         for (final Method m : methods) {
             final String methodName = m.getName();
-            hashSet.add(methodName);
             if (!methodMap.containsKey(methodName)) {
                 methodMap.put(methodName, new ArrayList<Method>());
             }
             methodMap.get(methodName).add(m);
         }
 
-        ArrayList<String> methodNames = new ArrayList<String>(hashSet);
+        ArrayList<String> methodNames = new ArrayList<String>(methodMap.keySet());
         Collections.sort(methodNames);
         Map<Method, MethodHelp> methodHelpMap = retrieveMethodHelpFromSources(apiClass, methodMap);
         ArrayList<ReflectMethodCommand> reflectMethodCommands = new ArrayList<ReflectMethodCommand>();
         for (String methodName : methodMap.keySet()) {
-            reflectMethodCommands.add(new ReflectMethodCommand(methodName,methodHelpMap,apiName, methods, methodMap));
+            reflectMethodCommands.add(new ReflectMethodCommand(methodName,methodHelpMap,apiName, methodMap.get(methodName)));
         }
         return reflectMethodCommands;
     }
@@ -151,9 +149,23 @@ public class ReflectCommandFactory {
         return javadoc;
     }
 
+    private static List<Class<?>> getSuperClasses(Class<?> aClass) {
+        ArrayList<Class<?>> superClasses = new ArrayList<Class<?>>();
+        List<Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
+        for (Class<?> anInterface : interfaces) {
+            superClasses.addAll(getSuperClasses(anInterface));
+        }
+        superClasses.addAll(interfaces);
+        Class<?> superclass = aClass.getSuperclass();
+        if (superclass != null){
+            superClasses.addAll(getSuperClasses(superclass));
+            superClasses.add(superclass);
+        }
+        return superClasses;
+    }
     private List<Class<?>> getAllSuperClass(final Class<?> apiClass) {
         final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.addAll(Arrays.asList(apiClass.getInterfaces()));
+        classes.addAll(getSuperClasses(apiClass));
         classes.add(apiClass);
         return classes;
     }

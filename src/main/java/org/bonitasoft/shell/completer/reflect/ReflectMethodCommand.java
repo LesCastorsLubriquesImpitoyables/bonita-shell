@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This program is free software: you can redistribute it and/or modify
@@ -12,7 +11,6 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package org.bonitasoft.shell.completer.reflect;
@@ -37,19 +35,18 @@ import org.bonitasoft.shell.completer.type.TypeHandler;
 /**
  * @author Baptiste Mesta
  */
-public class ReflectMethodCommand  extends ShellCommand {
+public class ReflectMethodCommand extends ShellCommand {
+
     private final String methodName;
     private final Map<Method, MethodHelp> methodHelpMap;
     private final String apiName;
-    private Method[] methods;
-    private HashMap<String, List<Method>> methodMap;
+    private List<Method> methods;
 
-    public ReflectMethodCommand(String methodName, Map<Method, MethodHelp> methodHelpMap, String apiName, Method[] methods, HashMap<String, List<Method>> methodMap) {
+    public ReflectMethodCommand(String methodName, Map<Method, MethodHelp> methodHelpMap, String apiName, List<Method> methods) {
         this.methodName = methodName;
         this.methodHelpMap = methodHelpMap;
         this.apiName = apiName;
         this.methods = methods;
-        this.methodMap = methodMap;
                         }
 
     @Override
@@ -60,8 +57,12 @@ public class ReflectMethodCommand  extends ShellCommand {
     @Override
     public boolean execute(List<String> parameters, ShellContext context) throws Exception {
         final Object api = context.getApi(apiName);
-        final List<Method> methods = getMethods(methodName, this.methods, parameters);
+        final List<Method> methods = getMethods(parameters);
         final Iterator<Method> iterator = methods.iterator();
+        if(methods.isEmpty()){
+            PrintColor.printRedBold("No matching method found, try with other arguments");
+            printHelp();
+        }
         while (iterator.hasNext()) {
             final Method method = iterator.next();
             try {
@@ -94,8 +95,6 @@ public class ReflectMethodCommand  extends ShellCommand {
     public boolean validate(List<String> args) {
         return true;
     }
-
-
 
     public static String printResult(final Object result) {
         String string;
@@ -151,14 +150,12 @@ public class ReflectMethodCommand  extends ShellCommand {
 
     }
 
-    private List<Method> getMethods(final String methodName, final Method[] methods, final List<String> parameters) {
+    private List<Method> getMethods(final List<String> parameters) {
         final List<Method> possibleMethods = new ArrayList<Method>();
 
         for (final Method method : methods) {
-            if (method.getName().equals(methodName)) {
-                if (method.getParameterTypes().length == parameters.size()) {
-                    possibleMethods.add(method);
-                }
+            if (method.getParameterTypes().length == parameters.size()) {
+                possibleMethods.add(method);
             }
         }
         final Iterator<Method> iterator = possibleMethods.iterator();
@@ -174,10 +171,7 @@ public class ReflectMethodCommand  extends ShellCommand {
                 }
             }
         }
-        if (!possibleMethods.isEmpty()) {
-            return possibleMethods;
-        }
-        throw new IllegalArgumentException("method does not exists");
+        return possibleMethods;
     }
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
@@ -191,17 +185,15 @@ public class ReflectMethodCommand  extends ShellCommand {
         return completer.isCastableTo(parameterAsString);
     }
 
-
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.<BonitaCompleter> asList( new ReflectMethodArgumentCompleter(this));
+        return Arrays.<BonitaCompleter> asList(new ReflectMethodArgumentCompleter(this));
     }
 
     public String getMethodHelp() {
-        final List<Method> possibleMethods = methodMap.get(methodName);
         String help = "";
-        if (possibleMethods != null) {
-            for (final Method possibleMethod : possibleMethods) {
+        if (methods != null) {
+            for (final Method possibleMethod : methods) {
                 final MethodHelp methodHelp = methodHelpMap.get(possibleMethod);
                 if (methodHelp != null) {
                     final List<String> argumentNames = methodHelp.getArgumentNames();
@@ -223,7 +215,6 @@ public class ReflectMethodCommand  extends ShellCommand {
     }
 
     public List<Class<?>> getArgumentType(final int index) {
-        final List<Method> methods = methodMap.get(methodName);
         if (methods == null) {
             return null;
         }

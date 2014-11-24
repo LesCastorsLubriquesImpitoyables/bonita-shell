@@ -55,8 +55,12 @@ public class BonitaShellInitializer implements ShellInitializer {
         commands = new ArrayList<ShellCommand>();
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
-        commands.addAll(new ReflectCommandFactory().createCommands(Arrays.asList(ProcessAPI.class.getName(),
-                IdentityAPI.class.getName(), ReportingAPI.class.getName())));
+        String apiClassesAsString = config.getProperty("API.classes");
+        apiClassesAsString.replaceAll(" ", "");
+        String[] apiClasses = apiClassesAsString.split(",");
+        List<String> classNames = Arrays.asList(apiClasses);
+        System.out.println("Using APIs: " + classNames);
+        commands.addAll(new ReflectCommandFactory().createCommands(classNames));
         initHome();
         initiLib();
         login();
@@ -64,8 +68,8 @@ public class BonitaShellInitializer implements ShellInitializer {
     }
 
     private void initiLib() {
-        Scanner s = new Scanner(System.in);
-        String next = s.next();
+        //Scanner s = new Scanner(System.in);
+        //String next = s.next();
 
     }
 
@@ -90,39 +94,5 @@ public class BonitaShellInitializer implements ShellInitializer {
             map.put(name, config.getProperty(name));
         }
         APITypeManager.setAPITypeAndParams(ApiAccessType.valueOf(config.getProperty("org.bonitasoft.engine.api-type")), map);
-        /*
-         * File homeFoler = null;
-         * if (System.getProperty("bonita.home") == null) {
-         * homeFoler = new File("home");
-         * FileUtils.deleteDirectory(homeFoler);
-         * homeFoler.mkdir();
-         * File file = new File(homeFoler, "client");
-         * file.mkdir();
-         * file = new File(file, "conf");
-         * file.mkdir();
-         * file = new File(file, "bonita-client.properties");
-         * file.createNewFile();
-         * final Properties properties = new Properties();
-         * properties.load(this.getClass().getResourceAsStream(
-         * "/bonita-client.properties"));
-         * final String application = System.getProperty("shell.application");
-         * if (application != null) {
-         * properties.put("application.name", application);
-         * }
-         * final String host = System.getProperty("shell.host");
-         * final String port = System.getProperty("shell.port");
-         * properties.put("server.url", "http://"
-         * + (host != null ? host : "localhost") + ":"
-         * + (port != null ? port : "8080"));
-         * final FileWriter writer = new FileWriter(file);
-         * try {
-         * properties.store(writer, "Server configuration");
-         * } finally {
-         * writer.close();
-         * }
-         * System.out.println("Using server configuration " + properties);
-         * System.setProperty("bonita.home", homeFoler.getAbsolutePath());
-         * }
-         */
     }
 }
