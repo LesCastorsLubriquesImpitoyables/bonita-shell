@@ -15,6 +15,7 @@
 
 package org.bonitasoft.shell.completer.type;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bonitasoft.engine.bpm.BaseElement;
@@ -38,7 +39,33 @@ public class BaseElementTypeCompleter implements TypeHandler<BaseElement> {
 
     @Override
     public String getString(BaseElement result) {
-        return result.getClass() + "[id=" + result.getId() + "]";
+        return result.getClass().getSimpleName() + "[id=" + result.getId() + "]" + "\n" + getFields(result);
+    }
+
+    private String getFields(BaseElement result) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        Field[] declaredFields = result.getClass().getDeclaredFields();
+        for (int i = 0; i < declaredFields.length; i++) {
+            Field f = declaredFields[i];
+            if (f.getName().equals("id")) {
+                continue;
+            }
+            sb.append(f.getName());
+            sb.append("=");
+            try {
+                f.setAccessible(true);
+                sb.append(f.get(result));
+            } catch (IllegalAccessException e) {
+                sb.append("$INVALID$");
+            }
+            if (i < declaredFields.length - 1) {
+                sb.append("\n");
+            }
+
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     @Override
