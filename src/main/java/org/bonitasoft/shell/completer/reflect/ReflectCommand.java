@@ -267,6 +267,9 @@ public class ReflectCommand extends ShellCommand {
     }
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
+        if(!parameterType.isPrimitive() && parameterAsString.equals("null")){
+            return true;
+        }
         final TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
         if(completer == null){
             return false;

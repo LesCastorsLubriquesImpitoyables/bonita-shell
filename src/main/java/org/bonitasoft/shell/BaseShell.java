@@ -149,12 +149,16 @@ public abstract class BaseShell {
             homeFoler = new File("home");
             FileUtils.deleteDirectory(homeFoler);
             homeFoler.mkdir();
-            File file = new File(homeFoler, "client");
+            File engineClient = new File(homeFoler, "engine-client");
+            engineClient.mkdir();
+            File file = new File(engineClient, "work");
             file.mkdir();
-            file = new File(file, "conf");
-            file.mkdir();
-            file = new File(file, "bonita-client.properties");
+            file = new File(file, "bonita-client-community.properties");
             file.createNewFile();
+            File file2 = new File(engineClient, "conf");
+            file2.mkdir();
+            file2 = new File(file2, "bonita-client-custom.properties");
+            file2.createNewFile();
             final Properties properties = new Properties();
             properties.load(this.getClass().getResourceAsStream(
                     "/bonita-client.properties"));
@@ -169,10 +173,13 @@ public abstract class BaseShell {
                     + (port != null ? port : "8080"));
 
             final FileWriter writer = new FileWriter(file);
+            final FileWriter writer2 = new FileWriter(file2);
             try {
                 properties.store(writer, "Server configuration");
+                properties.store(writer2, "Server configuration");
             } finally {
                 writer.close();
+                writer2.close();
             }
             System.out.println("Using server configuration " + properties);
             System.setProperty("bonita.home", homeFoler.getAbsolutePath());
