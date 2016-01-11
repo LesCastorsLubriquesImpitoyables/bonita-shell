@@ -1,14 +1,18 @@
 package org.bonitasoft.shell.completer.type;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
+import org.bonitasoft.engine.job.FailedJob;
 import org.bonitasoft.engine.search.SearchOptions;
 import org.bonitasoft.engine.search.SearchResult;
-import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
-
-import java.util.*;
 
 /**
  * Created by baptiste on 08/07/14.
@@ -33,14 +37,16 @@ public class TypeCompleters {
         completers.put(Integer.class, new IntegerCompleter());
         completers.put(int.class, new IntegerCompleter());
         completers.put(SearchOptions.class, new SearchOptionsCompleter());
+        completers.put(List.class, new ListTypeCompleter());
         completers.put(ProcessDefinition.class, new ProcessDefinitionTypeCompleter());
         completers.put(SearchResult.class, new SearchResultTypeCompleter());
         completers.put(ProcessDeploymentInfo.class, new ProcessDeploymentInfoTypeCompleter());
+        completers.put(FailedJob.class, new FailedJobTypeCompleter());
     }
 
 
     public static TypeHandler<?>  getCompleter(Class<?> type) {
-        return getCompleter(Arrays.<Class<?>>asList(type));
+        return getCompleter(Collections.<Class<?>>singletonList(type));
     }
 
     public static TypeHandler<?> getCompleter(List<Class<?>> type) {

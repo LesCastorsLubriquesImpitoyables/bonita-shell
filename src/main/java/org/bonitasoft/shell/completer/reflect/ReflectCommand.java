@@ -172,10 +172,13 @@ public class ReflectCommand extends ShellCommand {
                     PrintColor.printGreenBold(printResult(result));
                     return true;
                 }
-            } catch (final Exception e) {
+            } catch (Throwable e) {
                 if (!iterator.hasNext()) {
-                    final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
-                    PrintColor.printRedBold(invocationTargetException.getTargetException().getMessage());
+                    if(e instanceof InvocationTargetException){
+                        final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                        e = invocationTargetException.getTargetException();
+                    }
+                    PrintColor.printRedBold(e.getMessage());
                 }
             }
         }
@@ -184,7 +187,7 @@ public class ReflectCommand extends ShellCommand {
     }
 
     public static String printResult(final Object result) {
-        String string = "";
+        String string;
         if(result == null) {
             return "done";
         }
