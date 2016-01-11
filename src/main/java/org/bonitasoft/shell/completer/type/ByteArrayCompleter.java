@@ -1,15 +1,15 @@
 package org.bonitasoft.shell.completer.type;
 
-import jline.console.completer.FileNameCompleter;
-import org.apache.commons.io.IOUtils;
-import org.bonitasoft.shell.completer.ArgumentParser;
-import org.bonitasoft.shell.completer.BonitaCompleter;
-import org.bonitasoft.shell.completer.CompletionHelper;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+
+import jline.console.completer.FileNameCompleter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.bonitasoft.shell.completer.ArgumentParser;
+import org.bonitasoft.shell.completer.CompletionHelper;
 
 /**
  * Created by baptiste on 08/07/14.
@@ -52,6 +52,14 @@ public class ByteArrayCompleter extends FileNameCompleter implements TypeHandler
 
     @Override
     public String getString(byte[] result) {
+        try {
+            File bonitaResult = File.createTempFile("bonitaResult", ".tmp");
+            FileUtils.writeByteArrayToFile(bonitaResult,result);
+            return bonitaResult.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        };
+
         return String.valueOf(result);
     }
 }

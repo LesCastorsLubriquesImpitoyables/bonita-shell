@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.bonitasoft.engine</groupId>
 			<artifactId>bonita-client-sp</artifactId>
-			<version>7.1.3-SNAPSHOT</version>
+			<version>7.2.0-SNAPSHOT</version>
 		</dependency>
         <dependency>
             <groupId>com.bonitasoft.engine</groupId>
             <artifactId>bonita-global-javadoc</artifactId>
-            <version>7.1.3-SNAPSHOT</version>
+            <version>7.2.0-SNAPSHOT</version>
             <classifier>javadoc</classifier>
         </dependency>
         <dependency>

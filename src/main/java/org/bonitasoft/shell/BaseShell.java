@@ -6,20 +6,17 @@
  */
 package org.bonitasoft.shell;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import jline.console.ConsoleReader;
 
-import org.apache.commons.io.FileUtils;
+import org.bonitasoft.engine.api.ApiAccessType;
+import org.bonitasoft.engine.util.APITypeManager;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.ShellCommand;
@@ -44,7 +41,6 @@ public abstract class BaseShell {
 
     private HelpCommand helpCommand;
 
-    private File homeFoler;
 
     public void init() throws Exception {
         final List<ShellCommand> commandList = initShellCommands();
@@ -57,7 +53,12 @@ public abstract class BaseShell {
             commands.put(helpCommand.getName(), helpCommand);
         }
         PrintColor.init();
-        initHome();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("application.name","bonita");
+        parameters.put("server.url","http://localhost:8080");
+        parameters.put("org.bonitasoft.engine.api-type.parameters","server.url,application.name");
+        APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, parameters);
+
 
     }
 
@@ -81,7 +82,6 @@ public abstract class BaseShell {
      * @throws Exception
      */
     public void destroy() throws Exception {
-        cleanHome();
         PrintColor.clean();
     }
 
@@ -143,54 +143,6 @@ public abstract class BaseShell {
         return new ArrayList<String>(asList);
     }
 
-    protected void initHome() throws IOException {
-        homeFoler = null;
-        if (System.getProperty("bonita.home") == null) {
-            homeFoler = new File("home");
-            FileUtils.deleteDirectory(homeFoler);
-            homeFoler.mkdir();
-            File engineClient = new File(homeFoler, "engine-client");
-            engineClient.mkdir();
-            File file = new File(engineClient, "work");
-            file.mkdir();
-            file = new File(file, "bonita-client-community.properties");
-            file.createNewFile();
-            File file2 = new File(engineClient, "conf");
-            file2.mkdir();
-            file2 = new File(file2, "bonita-client-custom.properties");
-            file2.createNewFile();
-            final Properties properties = new Properties();
-            properties.load(this.getClass().getResourceAsStream(
-                    "/bonita-client.properties"));
-            final String application = System.getProperty("shell.application");
-            if (application != null) {
-                properties.put("application.name", application);
-            }
-            final String host = System.getProperty("shell.host");
-            final String port = System.getProperty("shell.port");
-            properties.put("server.url", "http://"
-                    + (host != null ? host : "localhost") + ":"
-                    + (port != null ? port : "8080"));
-
-            final FileWriter writer = new FileWriter(file);
-            final FileWriter writer2 = new FileWriter(file2);
-            try {
-                properties.store(writer, "Server configuration");
-                properties.store(writer2, "Server configuration");
-            } finally {
-                writer.close();
-                writer2.close();
-            }
-            System.out.println("Using server configuration " + properties);
-            System.setProperty("bonita.home", homeFoler.getAbsolutePath());
-        }
-    }
-
-    protected void cleanHome() throws IOException {
-        if (homeFoler != null) {
-            FileUtils.deleteDirectory(homeFoler);
-        }
-    }
 
     protected String getPrompt() {
         return PrintColor.getRedBold(getContext().getLoggedUser()) + "@" + PrintColor.getBlue(PROMPT);
