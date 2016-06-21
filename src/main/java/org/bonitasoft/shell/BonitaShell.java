@@ -1,5 +1,6 @@
 package org.bonitasoft.shell;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
@@ -10,7 +11,7 @@ public class BonitaShell {
 
     public static void main(final String[] args) throws Exception {
         Properties config = new Properties();
-        FileInputStream inStream = new FileInputStream(args[0]);
+        FileInputStream inStream = new FileInputStream(new File("../config.properties"));
         config.load(inStream);
         inStream.close();
         String initializerClassName = config.getProperty(SHELL_INITIALIZER);

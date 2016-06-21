@@ -7,3 +7,6 @@ tmp_home/
 .idea
 bonita-shell.iml
 *.orig
+build
+.gradle
+gradle

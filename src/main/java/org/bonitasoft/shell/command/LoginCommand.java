@@ -27,23 +27,33 @@ public class LoginCommand extends ShellCommand {
 
     @Override
     public boolean execute(final List<String> args, final ShellContext context) throws Exception {
-        if (!context.isLogged()) {
-            context.login(args.get(0), args.get(1));
-            return true;
-        } else {
+        String type = args.get(0).toLowerCase();
+
+        if (context.isLogged() || context.isLoggedOnPlatform()) {
             System.out.println("Already logged to the tenant!");
+            return false;
         }
-        return false;
+        switch (type) {
+            case "tenant":
+                context.login(args.get(1), args.get(2));
+                break;
+            case "platform":
+                context.loginPlatform(args.get(1), args.get(2));
+                break;
+            default:
+                throw new IllegalArgumentException("type should be tenant or platform");
+        }
+        return true;
     }
 
     @Override
     public void printHelp() {
-        System.out.println("Usage: login <username> <password>");
+        System.out.println("Usage: login <tenant or platform> <username> <password>");
     }
 
     @Override
     public boolean validate(final List<String> args) {
-        return args.size() == 2;
+        return args.size() == 3 && (args.get(0).equals("tenant") || args.get(0).equals("platform"));
     }
 
     @Override

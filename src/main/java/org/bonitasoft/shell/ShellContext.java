@@ -16,10 +16,6 @@
  */
 package org.bonitasoft.shell;
 
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.session.APISession;
-
 import com.bonitasoft.engine.api.IdentityAPI;
 import com.bonitasoft.engine.api.LoginAPI;
 import com.bonitasoft.engine.api.MonitoringAPI;
@@ -29,6 +25,12 @@ import com.bonitasoft.engine.api.ProfileAPI;
 import com.bonitasoft.engine.api.ReportingAPI;
 import com.bonitasoft.engine.api.TenantAPIAccessor;
 import com.bonitasoft.engine.api.ThemeAPI;
+import org.bonitasoft.engine.api.CommandAPI;
+import org.bonitasoft.engine.api.PlatformAPIAccessor;
+import org.bonitasoft.engine.api.PlatformLoginAPI;
+import org.bonitasoft.engine.exception.BonitaException;
+import org.bonitasoft.engine.session.APISession;
+import org.bonitasoft.engine.session.PlatformSession;
 
 /**
  * @author Baptiste Mesta
@@ -36,6 +38,10 @@ import com.bonitasoft.engine.api.ThemeAPI;
 public class ShellContext {
 
     private static ShellContext INSTANCE = new ShellContext();
+    private PlatformLoginAPI platformLoginAPI;
+    private LoginAPI loginAPI;
+    private APISession session;
+    private PlatformSession platformSession;
 
     public static ShellContext getInstance() {
         if (INSTANCE == null) {
@@ -47,11 +53,6 @@ public class ShellContext {
     private ShellContext() {
     }
 
-    private LoginAPI loginAPI;
-
-    private APISession session;
-
-    // ------------------ Tenant ------------------------
     /**
      * @return
      */
@@ -59,8 +60,19 @@ public class ShellContext {
         return session != null;
     }
 
+    public boolean isLoggedOnPlatform() {
+        return session != null;
+    }
+
     public void logout() throws Exception {
-        loginAPI.logout(session);
+        if (session != null) {
+
+            loginAPI.logout(session);
+        }
+        if (platformSession != null) {
+            platformLoginAPI.logout(platformSession);
+        }
+        platformLoginAPI = null;
         loginAPI = null;
         session = null;
     }
@@ -71,7 +83,14 @@ public class ShellContext {
      */
     public void login(final String username, final String password) throws Exception {
         loginAPI = TenantAPIAccessor.getLoginAPI();
+        platformLoginAPI = PlatformAPIAccessor.getPlatformLoginAPI();
         session = loginAPI.login(username, password);
+    }
+
+    public void loginPlatform(final String username, final String password) throws Exception {
+        loginAPI = TenantAPIAccessor.getLoginAPI();
+        platformLoginAPI = PlatformAPIAccessor.getPlatformLoginAPI();
+        platformSession = platformLoginAPI.login(username, password);
     }
 
     public IdentityAPI getIdentityAPI() throws BonitaException {
@@ -137,8 +156,11 @@ public class ShellContext {
     }
 
     public String getLoggedUser() {
-        if(isLogged()) {
+        if (isLogged()) {
             return session.getUserName();
+        }
+        if (isLoggedOnPlatform()) {
+            return platformSession.getUserName();
         }
         return "bonita";
     }

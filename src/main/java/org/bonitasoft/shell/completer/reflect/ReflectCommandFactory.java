@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -46,7 +44,7 @@ public class ReflectCommandFactory {
     private static final Pattern PARAM_REGEX = Pattern.compile("([a-zA-Z_0-9\\[\\]]+)(<.*>)?.([a-zA-Z_0-9]+)");
 
     public List<ReflectMethodCommand> createCommands(List<String> classNames) throws Exception {
-        ArrayList<ReflectMethodCommand> reflectCommands = new ArrayList<ReflectMethodCommand>();
+        ArrayList<ReflectMethodCommand> reflectCommands = new ArrayList<>();
         for (String className : classNames) {
             Class<?> apiClass = Class.forName(className);
             reflectCommands.addAll(createCommandsForClass(apiClass));
@@ -57,7 +55,7 @@ public class ReflectCommandFactory {
     private List<ReflectMethodCommand> createCommandsForClass(Class<?> apiClass) {
         String apiName = apiClass.getSimpleName();
         Method[] methods = apiClass.getMethods();
-        HashMap<String, List<Method>> methodMap = new HashMap<String, List<Method>>();
+        HashMap<String, List<Method>> methodMap = new HashMap<>();
         for (final Method m : methods) {
             final String methodName = m.getName();
             if (!methodMap.containsKey(methodName)) {
@@ -66,12 +64,12 @@ public class ReflectCommandFactory {
             methodMap.get(methodName).add(m);
         }
 
-        ArrayList<String> methodNames = new ArrayList<String>(methodMap.keySet());
+        ArrayList<String> methodNames = new ArrayList<>(methodMap.keySet());
         Collections.sort(methodNames);
         Map<Method, MethodHelp> methodHelpMap = retrieveMethodHelpFromSources(apiClass, methodMap);
-        ArrayList<ReflectMethodCommand> reflectMethodCommands = new ArrayList<ReflectMethodCommand>();
+        ArrayList<ReflectMethodCommand> reflectMethodCommands = new ArrayList<>();
         for (String methodName : methodMap.keySet()) {
-            reflectMethodCommands.add(new ReflectMethodCommand(methodName,methodHelpMap,apiName, methodMap.get(methodName)));
+            reflectMethodCommands.add(new ReflectMethodCommand(methodName, methodHelpMap, apiName, methodMap.get(methodName)));
         }
         return reflectMethodCommands;
     }
@@ -79,7 +77,7 @@ public class ReflectCommandFactory {
 
     private Map<Method, MethodHelp> retrieveMethodHelpFromSources(final Class<?> apiClass, final Map<String, List<Method>> methodMap) {
         final List<Class<?>> allSuperClass = getAllSuperClass(apiClass);
-        final HashMap<Method, MethodHelp> helpHashMap = new HashMap<Method, MethodHelp>();
+        final HashMap<Method, MethodHelp> helpHashMap = new HashMap<>();
         final List<Document> javadocClasses = getJavadocClasses(allSuperClass);
         for (final Document javadocClass : javadocClasses) {
             final Elements methods = javadocClass.select(".overviewSummary td.colLast");
@@ -92,8 +90,8 @@ public class ReflectCommandFactory {
                     String param = matcherMethod.group(2);
                     param = param.replace("...", "[]");
                     final String[] params = param.split(", ");
-                    final ArrayList<String> parameterNames = new ArrayList<String>();
-                    final ArrayList<String> parameterTypes = new ArrayList<String>();
+                    final ArrayList<String> parameterNames = new ArrayList<>();
+                    final ArrayList<String> parameterTypes = new ArrayList<>();
                     for (int i = 0; i < params.length; i++) {
                         final Matcher matcherParam = PARAM_REGEX.matcher(params[i]);
                         while (matcherParam.find()) {
@@ -102,7 +100,7 @@ public class ReflectCommandFactory {
                         }
                     }
                     Method methodOfDeclaration = getMethodOfDeclaration(methodMap, name, parameterTypes);
-                    if(methodOfDeclaration != null){
+                    if (methodOfDeclaration != null) {
                         //not in the binaries but in the javadoc..
                         helpHashMap.put(methodOfDeclaration, new MethodHelp(description, parameterNames));
                     }
@@ -114,7 +112,7 @@ public class ReflectCommandFactory {
 
     private Method getMethodOfDeclaration(final Map<String, List<Method>> methodMap, final String name, final List<String> parameterTypesAsString) {
         final List<Method> methodList = methodMap.get(name);
-        if (methodList != null){
+        if (methodList != null) {
             for (final Method method : methodList) {
                 final Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length == parameterTypesAsString.size()) {
@@ -138,7 +136,7 @@ public class ReflectCommandFactory {
     }
 
     private List<Document> getJavadocClasses(final List<Class<?>> allSuperClass) {
-        final List<Document> javadoc = new ArrayList<Document>();
+        final List<Document> javadoc = new ArrayList<>();
         for (final Class<?> superClass : allSuperClass) {
             try {
                 javadoc.add(Jsoup.parse(superClass.getResourceAsStream("/" + superClass.getName().replace(".", "/") + ".html"), null, "/"));
@@ -150,21 +148,22 @@ public class ReflectCommandFactory {
     }
 
     private static List<Class<?>> getSuperClasses(Class<?> aClass) {
-        ArrayList<Class<?>> superClasses = new ArrayList<Class<?>>();
-        List<Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
+        ArrayList<Class<?>> superClasses = new ArrayList<>();
+        List<? extends Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
         for (Class<?> anInterface : interfaces) {
             superClasses.addAll(getSuperClasses(anInterface));
         }
         superClasses.addAll(interfaces);
         Class<?> superclass = aClass.getSuperclass();
-        if (superclass != null){
+        if (superclass != null) {
             superClasses.addAll(getSuperClasses(superclass));
             superClasses.add(superclass);
         }
         return superClasses;
     }
+
     private List<Class<?>> getAllSuperClass(final Class<?> apiClass) {
-        final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        final ArrayList<Class<?>> classes = new ArrayList<>();
         classes.addAll(getSuperClasses(apiClass));
         classes.add(apiClass);
         return classes;

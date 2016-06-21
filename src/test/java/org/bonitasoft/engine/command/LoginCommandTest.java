@@ -1,11 +1,7 @@
 package org.bonitasoft.engine.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 
@@ -44,19 +40,20 @@ public class LoginCommandTest {
     public void testValidate() throws Exception {
         assertFalse(loginCommand.validate(Arrays.asList("john")));
         assertFalse(loginCommand.validate(Arrays.asList("john", "jack", "james")));
-        assertTrue(loginCommand.validate(Arrays.asList("john", "bpm")));
+        assertFalse(loginCommand.validate(Arrays.asList("john", "bpm")));
+        assertTrue(loginCommand.validate(Arrays.asList("tenant", "john", "bpm")));
     }
 
     @Test
     public void testExecute() throws Exception {
-        loginCommand.execute(Arrays.asList("john", "bpm"), context);
+        loginCommand.execute(Arrays.asList("tenant", "john", "bpm"), context);
         verify(context).login("john", "bpm");
     }
 
     @Test
     public void testExecuteWhenAlreadyLogged() throws Exception {
         when(context.isLogged()).thenReturn(true);
-        loginCommand.execute(Arrays.asList("john", "bpm"), context);
+        loginCommand.execute(Arrays.asList("tenant", "john", "bpm"), context);
         verify(context, times(1)).isLogged();
         verify(context, times(0)).login("john", "bpm");
     }

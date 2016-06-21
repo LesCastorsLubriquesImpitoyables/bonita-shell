@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import jline.console.completer.Completer;
-import jline.console.completer.StringsCompleter;
-
 import org.bonitasoft.shell.command.ShellCommand;
 
 /**
@@ -21,21 +19,21 @@ import org.bonitasoft.shell.command.ShellCommand;
  * Each command can have different completer
  * At the start of the line the completer complete with command name
  * Then it completes the line using command's completers
- * 
+ *
  * @author Baptiste Mesta
  */
 public class CommandArgumentsCompleter implements Completer {
 
     private final HashMap<String, ShellCommand> commands;
 
-    private final StringsCompleter commandCompleter;
+    private final APICompleter commandCompleter;
 
     /**
      * @param commands
      */
     public CommandArgumentsCompleter(final HashMap<String, ShellCommand> commands) {
         this.commands = commands;
-        commandCompleter = new StringsCompleter(commands.keySet());
+        commandCompleter = new APICompleter(commands);
     }
 
     @Override

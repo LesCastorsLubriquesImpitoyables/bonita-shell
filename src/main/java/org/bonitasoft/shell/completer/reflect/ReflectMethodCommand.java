@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class ReflectMethodCommand extends ShellCommand {
         this.methodHelpMap = methodHelpMap;
         this.apiName = apiName;
         this.methods = methods;
-                        }
+    }
 
     @Override
     public String getName() {
@@ -59,7 +58,7 @@ public class ReflectMethodCommand extends ShellCommand {
         final Object api = context.getApi(apiName);
         final List<Method> methods = getMethods(parameters);
         final Iterator<Method> iterator = methods.iterator();
-        if(methods.isEmpty()){
+        if (methods.isEmpty()) {
             PrintColor.printRedBold("No matching method found, try with other arguments");
             printHelp();
         }
@@ -77,9 +76,8 @@ public class ReflectMethodCommand extends ShellCommand {
                         final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
                         e = invocationTargetException.getTargetException();
                     }
-                        PrintColor.printRedBold(e.getMessage());
+                    PrintColor.printRedBold(e.getMessage());
 
-                    }
                 }
             }
         }
@@ -130,7 +128,7 @@ public class ReflectMethodCommand extends ShellCommand {
      * @return
      */
     private Object[] castParameters(final Class<?>[] classes, final List<String> parameters) {
-        final List<Object> list = new ArrayList<Object>(parameters.size());
+        final List<Object> list = new ArrayList<>(parameters.size());
         for (int i = 0; i < classes.length; i++) {
             final Class<?> clazz = classes[i];
             final String parameter = parameters.get(i);
@@ -151,7 +149,7 @@ public class ReflectMethodCommand extends ShellCommand {
     }
 
     private List<Method> getMethods(final List<String> parameters) {
-        final List<Method> possibleMethods = new ArrayList<Method>();
+        final List<Method> possibleMethods = new ArrayList<>();
 
         for (final Method method : methods) {
             if (method.getParameterTypes().length == parameters.size()) {
@@ -175,7 +173,7 @@ public class ReflectMethodCommand extends ShellCommand {
     }
 
     private boolean isCastableTo(final String parameterAsString, final Class<?> parameterType) {
-        if(!parameterType.isPrimitive() && parameterAsString.equals("null")){
+        if (!parameterType.isPrimitive() && parameterAsString.equals("null")) {
             return true;
         }
         final TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
@@ -187,7 +185,7 @@ public class ReflectMethodCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.<BonitaCompleter> asList(new ReflectMethodArgumentCompleter(this));
+        return Arrays.<BonitaCompleter>asList(new ReflectMethodArgumentCompleter(this));
     }
 
     public String getMethodHelp() {
@@ -219,7 +217,7 @@ public class ReflectMethodCommand extends ShellCommand {
             return null;
         }
 
-        final List<Class<?>> classes = new ArrayList<Class<?>>();
+        final List<Class<?>> classes = new ArrayList<>();
         for (final Method method : methods) {
             final Class<?>[] parameterTypes = method.getParameterTypes();
             if (index < parameterTypes.length) {

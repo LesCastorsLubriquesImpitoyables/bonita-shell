@@ -15,7 +15,7 @@ import org.bonitasoft.shell.completer.BonitaCompleter;
 
 /**
  * A command that can be contributed to a shell
- * 
+ *
  * @author Baptiste Mesta
  */
 public abstract class ShellCommand {
@@ -23,12 +23,9 @@ public abstract class ShellCommand {
     public abstract String getName();
 
     /**
-     * @param args
-     *            arguments to execute the command
-     * @param context
-     *            a context given by the shell
-     * @return
-     *         true if the command was successfully executed
+     * @param args    arguments to execute the command
+     * @param context a context given by the shell
+     * @return true if the command was successfully executed
      * @throws Exception
      */
     public abstract boolean execute(List<String> args, ShellContext context) throws Exception;
@@ -44,23 +41,22 @@ public abstract class ShellCommand {
 
     /**
      * Check if given args allow the command to be executed
-     * 
+     *
      * @param args
-     * @return
-     *         true if the command can be executed
+     * @return true if the command can be executed
      */
     public abstract boolean validate(List<String> args);
 
     /**
      * utiliy method to get argument after an other argument:
      * e.g. if '-u user' is given to the command this return the 'user'
-     * 
+     *
      * @param args
      * @param key
      * @return
      */
     protected String getParam(final List<String> args, final String key) {
-        for (final Iterator<String> iterator = args.iterator(); iterator.hasNext();) {
+        for (final Iterator<String> iterator = args.iterator(); iterator.hasNext(); ) {
             final String param = iterator.next();
             if (key.equals(param)) {
                 return iterator.next();
@@ -69,4 +65,7 @@ public abstract class ShellCommand {
         return null;
     }
 
+    public boolean isPlatform() {
+        return false;
+    }
 }
