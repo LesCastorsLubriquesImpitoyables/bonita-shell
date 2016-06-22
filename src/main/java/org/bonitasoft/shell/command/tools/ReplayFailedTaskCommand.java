@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.bpm.connector.ConnectorInstance;
 import org.bonitasoft.engine.bpm.connector.ConnectorInstancesSearchDescriptor;
 import org.bonitasoft.engine.bpm.connector.ConnectorState;
@@ -19,8 +20,6 @@ import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.NoParamCompleter;
-
-import com.bonitasoft.engine.api.ProcessAPI;
 
 /**
  * All connectors and tasks are replayed.
@@ -44,6 +43,11 @@ public class ReplayFailedTaskCommand extends ShellCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Replay all failed tasks";
+    }
+
+    @Override
     public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         try {
             final ProcessAPI processAPI = context.getProcessAPI();
@@ -54,7 +58,7 @@ public class ReplayFailedTaskCommand extends ShellCommand {
             final SearchResult<ConnectorInstance> searchConnectorInstances = processAPI.searchConnectorInstances(searchOptionsBuilder.done());
             final List<ConnectorInstance> connectorInstances = searchConnectorInstances.getResult();
 
-            final Map<Long, ConnectorStateReset> connectorsMap = new HashMap<Long, ConnectorStateReset>();
+            final Map<Long, ConnectorStateReset> connectorsMap = new HashMap<>();
             for (final ConnectorInstance connectorInstance : connectorInstances) {
                 connectorsMap.put(Long.valueOf(connectorInstance.getId()), ConnectorStateReset.TO_RE_EXECUTE);
             }
@@ -92,4 +96,8 @@ public class ReplayFailedTaskCommand extends ShellCommand {
         return true;
     }
 
+    @Override
+    public boolean isActive() {
+        return ShellContext.getInstance().isLogged();
+    }
 }

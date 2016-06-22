@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bonitasoft.engine.reporting.impl.ReportImpl;
 import org.bonitasoft.engine.bpm.BaseElement;
 import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
@@ -22,11 +21,11 @@ import org.bonitasoft.engine.search.SearchResult;
 public class TypeCompleters {
 
 
-    private static Map<Class<?>,TypeHandler<?>> completers;
+    private static Map<Class<?>, TypeHandler<?>> completers;
 
     static {
-        completers = new HashMap<Class<?>,TypeHandler<?>>();
-        completers.put(BusinessArchive.class,new BusinessArchiveTypeCompleter());
+        completers = new HashMap<>();
+        completers.put(BusinessArchive.class, new BusinessArchiveTypeCompleter());
         completers.put(byte[].class, new ByteArrayCompleter());
         completers.put(boolean.class, new BooleanCompleter());
         completers.put(Boolean.class, new BooleanCompleter());
@@ -48,7 +47,7 @@ public class TypeCompleters {
     }
 
 
-    public static TypeHandler<?>  getCompleter(Class<?> type) {
+    public static TypeHandler<?> getCompleter(Class<?> type) {
         return getCompleter(Collections.<Class<?>>singletonList(type));
     }
 
@@ -56,7 +55,7 @@ public class TypeCompleters {
 
         //firstPass class
         for (Class<?> aClass : type) {
-            if(completers.containsKey(aClass)){
+            if (completers.containsKey(aClass)) {
                 return completers.get(aClass);
             }
         }
@@ -65,28 +64,28 @@ public class TypeCompleters {
         for (Class<?> aClass : type) {
             List<Class<?>> superClasses = getSuperClasses(aClass);
             for (Class<?> superClass : superClasses) {
-                if(completers.containsKey(superClass)){
+                if (completers.containsKey(superClass)) {
                     return completers.get(superClass);
                 }
             }
         }
 
         //in last case we return the string completer
-        if (type.contains(String.class)){
+        if (type.contains(String.class)) {
             return new StringCompleter();
         }
         return null;
     }
 
     private static List<Class<?>> getSuperClasses(Class<?> aClass) {
-        ArrayList<Class<?>> superClasses = new ArrayList<Class<?>>();
-        List<Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
+        ArrayList<Class<?>> superClasses = new ArrayList<>();
+        List<? extends Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
         for (Class<?> anInterface : interfaces) {
             superClasses.addAll(getSuperClasses(anInterface));
         }
         superClasses.addAll(interfaces);
         Class<?> superclass = aClass.getSuperclass();
-        if (superclass != null){
+        if (superclass != null) {
             superClasses.addAll(getSuperClasses(superclass));
             superClasses.add(superclass);
         }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
 import org.bonitasoft.engine.bpm.process.ProcessInstanceSearchDescriptor;
 import org.bonitasoft.engine.search.SearchOptionsBuilder;
@@ -14,8 +15,6 @@ import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 import org.bonitasoft.shell.completer.BonitaStringCompleter;
-
-import com.bonitasoft.engine.api.ProcessAPI;
 
 /**
  * @author Christophe Gomes
@@ -34,6 +33,11 @@ public class SearchLockedCommand extends ShellCommand {
     @Override
     public String getName() {
         return COMMAND_NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Search for locked commands";
     }
 
     private static Date parseDate(String dateString) throws ParseException {
@@ -112,4 +116,8 @@ public class SearchLockedCommand extends ShellCommand {
         return true;
     }
 
+    @Override
+    public boolean isActive() {
+        return ShellContext.getInstance().isLogged();
+    }
 }

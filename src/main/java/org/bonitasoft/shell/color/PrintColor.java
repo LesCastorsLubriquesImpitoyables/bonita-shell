@@ -12,10 +12,12 @@ import org.fusesource.jansi.AnsiConsole;
 
 /**
  * Allow to print colorized String.
- * 
+ *
  * @author Joachim Segala
  */
 public class PrintColor {
+
+    private static boolean enabled;
 
     public static final void printRed(final String pText) {
         print(pText, Ansi.Color.RED, false);
@@ -54,11 +56,15 @@ public class PrintColor {
     }
 
     private static final void print(final String pText, final Color pColor,
-            final boolean pBold) {
-        if (pBold) {
-            System.out.println(ansi().bold().fg(pColor).a(pText).reset());
+                                    final boolean pBold) {
+        if (enabled) {
+            if (pBold) {
+                System.out.println(ansi().bold().fg(pColor).a(pText).reset());
+            } else {
+                System.out.println(ansi().fg(pColor).a(pText).reset());
+            }
         } else {
-            System.out.println(ansi().fg(pColor).a(pText).reset());
+            System.out.println(pText);
         }
     }
 
@@ -87,11 +93,19 @@ public class PrintColor {
     }
 
     private static String getColorized(final String pText, final Color pColor, final boolean pBold) {
-        if (pBold) {
-            return ansi().bold().fg(pColor).a(pText).reset().toString();
+        if (enabled) {
+            Ansi ansi = ansi();
+            if (pBold) {
+                ansi = ansi.bold();
+            }
+            return ansi.fg(pColor).a(pText).reset().toString();
+
         } else {
-            return ansi().fg(pColor).a(pText).reset().toString();
+            return pText;
         }
     }
 
+    public static void enable(boolean enabled) {
+        PrintColor.enabled = enabled;
+    }
 }

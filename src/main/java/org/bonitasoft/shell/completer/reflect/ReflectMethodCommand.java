@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,7 @@ public class ReflectMethodCommand extends ShellCommand {
     private final Map<Method, MethodHelp> methodHelpMap;
     private final String apiName;
     private List<Method> methods;
+    private boolean platform = false;
 
     public ReflectMethodCommand(String methodName, Map<Method, MethodHelp> methodHelpMap, String apiName, List<Method> methods) {
         this.methodName = methodName;
@@ -51,6 +52,15 @@ public class ReflectMethodCommand extends ShellCommand {
     @Override
     public String getName() {
         return methodName;
+    }
+
+    @Override
+    public boolean isActive() {
+        return platform && ShellContext.getInstance().isLoggedOnPlatform() || !platform && ShellContext.getInstance().isLogged();
+    }
+
+    public void setPlatform(boolean platform) {
+        this.platform = platform;
     }
 
     @Override
@@ -86,7 +96,7 @@ public class ReflectMethodCommand extends ShellCommand {
 
     @Override
     public void printHelp() {
-        System.out.println(getMethodHelp());
+        System.out.print(getMethodHelp());
     }
 
     @Override
@@ -185,10 +195,10 @@ public class ReflectMethodCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.<BonitaCompleter>asList(new ReflectMethodArgumentCompleter(this));
+        return Collections.<BonitaCompleter>singletonList(new ReflectMethodArgumentCompleter(this));
     }
 
-    public String getMethodHelp() {
+    String getMethodHelp() {
         String help = "";
         if (methods != null) {
             for (final Method possibleMethod : methods) {
@@ -205,7 +215,6 @@ public class ReflectMethodCommand extends ShellCommand {
                     }
                     help += ")\n";
                     help += methodHelp.getComment();
-                    help += "\n\n";
                 }
             }
         }
@@ -226,5 +235,10 @@ public class ReflectMethodCommand extends ShellCommand {
         }
 
         return classes;
+    }
+
+    @Override
+    public String getDescription() {
+        return methodHelpMap.get(methods.get(0)).getComment() + " (" + apiName + ")";
     }
 }

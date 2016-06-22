@@ -23,6 +23,11 @@ import org.bonitasoft.shell.ShellContext;
 public class LogoutCommand extends ShellCommand {
 
     @Override
+    public String getDescription() {
+        return "Logout from the current session";
+    }
+
+    @Override
     public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         if (context.isLogged()) {
             context.logout();
@@ -49,4 +54,8 @@ public class LogoutCommand extends ShellCommand {
         return "logout";
     }
 
+    @Override
+    public boolean isActive() {
+        return ShellContext.getInstance().isLogged() || ShellContext.getInstance().isLoggedOnPlatform();
+    }
 }

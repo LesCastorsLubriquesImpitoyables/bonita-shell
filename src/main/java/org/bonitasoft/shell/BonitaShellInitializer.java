@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
-import com.bonitasoft.engine.api.ReportingAPI;
 import org.bonitasoft.engine.api.ApiAccessType;
-import org.bonitasoft.engine.api.IdentityAPI;
-import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.util.APITypeManager;
+import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ShellCommand;
@@ -52,25 +50,21 @@ public class BonitaShellInitializer implements ShellInitializer {
 
     @Override
     public void initialize() throws Exception {
-        commands = new ArrayList<ShellCommand>();
+        commands = new ArrayList<>();
         commands.add(new LoginCommand());
         commands.add(new LogoutCommand());
-        String apiClassesAsString = config.getProperty("API.classes");
-        apiClassesAsString.replaceAll(" ", "");
-        String[] apiClasses = apiClassesAsString.split(",");
-        List<String> classNames = Arrays.asList(apiClasses);
-        System.out.println("Using APIs: " + classNames);
-        commands.addAll(new ReflectCommandFactory().createCommands(classNames));
-        initHome();
-        initiLib();
+        commands.addAll(new ReflectCommandFactory().createTenantCommands(getCommaSeparatedValues("API.tenant.classes")));
+        commands.addAll(new ReflectCommandFactory().createPlatformCommands(getCommaSeparatedValues("API.platform.classes")));
+        initConnectionProperties();
         login();
+        PrintColor.enable(Boolean.valueOf(config.getProperty("shell.color")));
 
     }
 
-    private void initiLib() {
-        //Scanner s = new Scanner(System.in);
-        //String next = s.next();
-
+    private List<String> getCommaSeparatedValues(String key) {
+        String apiClassesAsString = config.getProperty(key);
+        String[] apiClasses = apiClassesAsString.replaceAll(" ", "").split(",");
+        return Arrays.asList(apiClasses);
     }
 
     private void login() {
@@ -88,8 +82,8 @@ public class BonitaShellInitializer implements ShellInitializer {
         }
     }
 
-    protected void initHome() throws IOException {
-        HashMap<String, String> map = new HashMap<String, String>();
+    private void initConnectionProperties() throws IOException {
+        HashMap<String, String> map = new HashMap<>();
         for (final String name : config.stringPropertyNames()) {
             map.put(name, config.getProperty(name));
         }

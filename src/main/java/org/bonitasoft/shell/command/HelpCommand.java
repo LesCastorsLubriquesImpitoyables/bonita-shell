@@ -6,27 +6,28 @@
  */
 package org.bonitasoft.shell.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import jline.console.completer.StringsCompleter;
-
 import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.completer.BonitaCompleter;
 
 /**
  * Default implementation of the help command
- * 
+ *
  * @author Baptiste Mesta
  */
 public class HelpCommand extends ShellCommand {
 
     private final HashMap<String, ShellCommand> commands;
+
+    @Override
+    public String getDescription() {
+        return "The Help";
+    }
 
     /**
      * @param commands
@@ -53,23 +54,24 @@ public class HelpCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Arrays.asList((BonitaCompleter) new StringsCompleter(commands.keySet()));
+        return Collections.singletonList((BonitaCompleter) new StringsCompleter(commands.keySet()));
     }
 
     private void printUsage() {
         System.out.println("-----------------------------------------------");
         System.out.println("Usage: <Command> <arguments>");
         System.out.println("Command can be:");
-        final Set<String> keySet = commands.keySet();
-        final ArrayList<String> list = new ArrayList<String>(keySet);
-        Collections.sort(list);
-        for (final String entry : list) {
-            PrintColor.printGreenBold(entry);
+
+        for (final ShellCommand command : commands.values()) {
+            if (command.isActive()) {
+                System.out.println(PrintColor.getGreen(command.getName()) + " -- " + command.getDescription());
+            }
         }
         System.out.println("");
         System.out.println("Use 'help <Command>' for help about a command");
         System.out.println("-----------------------------------------------");
     }
+
 
     @Override
     public String getName() {

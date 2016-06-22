@@ -61,7 +61,7 @@ public class ShellContext {
     }
 
     public boolean isLoggedOnPlatform() {
-        return session != null;
+        return platformSession != null;
     }
 
     public void logout() throws Exception {
@@ -151,6 +151,9 @@ public class ShellContext {
         }
         if (apiName.equals("CommandAPI")) {
             return getCommandAPI();
+        }
+        if (apiName.equals("PlatformAPI")) {
+            return PlatformAPIAccessor.getPlatformAPI(platformSession);
         }
         throw new IllegalArgumentException("Unknown API: " + apiName);
     }

@@ -26,6 +26,11 @@ import org.bonitasoft.shell.completer.NoParamCompleter;
 public class LoginCommand extends ShellCommand {
 
     @Override
+    public String getDescription() {
+        return "Login on the platform or tenant";
+    }
+
+    @Override
     public boolean execute(final List<String> args, final ShellContext context) throws Exception {
         String type = args.get(0).toLowerCase();
 
@@ -66,4 +71,8 @@ public class LoginCommand extends ShellCommand {
         return "login";
     }
 
+    @Override
+    public boolean isActive() {
+        return !ShellContext.getInstance().isLogged() && !ShellContext.getInstance().isLoggedOnPlatform();
+    }
 }

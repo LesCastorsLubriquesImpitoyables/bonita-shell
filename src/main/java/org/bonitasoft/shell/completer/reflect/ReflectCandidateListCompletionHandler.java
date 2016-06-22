@@ -21,8 +21,8 @@ public class ReflectCandidateListCompletionHandler extends CandidateListCompleti
             }
         }
         if (candidates.isEmpty() && help != null) {
-            reader.println();
-            reader.println(help);
+            System.out.println();
+            System.out.println(help);
         }
         return super.complete(reader, candidates, pos);
     }

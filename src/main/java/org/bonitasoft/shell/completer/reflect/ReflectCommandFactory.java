@@ -43,11 +43,24 @@ public class ReflectCommandFactory {
 
     private static final Pattern PARAM_REGEX = Pattern.compile("([a-zA-Z_0-9\\[\\]]+)(<.*>)?.([a-zA-Z_0-9]+)");
 
-    public List<ReflectMethodCommand> createCommands(List<String> classNames) throws Exception {
+    public List<ReflectMethodCommand> createTenantCommands(List<String> classNames) throws Exception {
+        return createCommands(classNames, false);
+    }
+
+    public List<ReflectMethodCommand> createPlatformCommands(List<String> classNames) throws Exception {
+        return createCommands(classNames, true);
+    }
+
+    private List<ReflectMethodCommand> createCommands(List<String> classNames, boolean platform) throws ClassNotFoundException {
         ArrayList<ReflectMethodCommand> reflectCommands = new ArrayList<>();
         for (String className : classNames) {
             Class<?> apiClass = Class.forName(className);
-            reflectCommands.addAll(createCommandsForClass(apiClass));
+            List<ReflectMethodCommand> commandsForClass = createCommandsForClass(apiClass);
+            for (ReflectMethodCommand commandForClass : commandsForClass) {
+                reflectCommands.add(commandForClass);
+                commandForClass.setPlatform(platform);
+            }
+            reflectCommands.addAll(commandsForClass);
         }
         return reflectCommands;
     }

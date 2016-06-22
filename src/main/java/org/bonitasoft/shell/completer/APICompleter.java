@@ -9,19 +9,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import jline.console.completer.Completer;
-import org.bonitasoft.shell.ShellContext;
 import org.bonitasoft.shell.command.ShellCommand;
 
 /**
  * @author Baptiste Mesta
  */
 public class APICompleter implements Completer {
-    private final ShellContext context;
     private HashMap<String, ShellCommand> commands;
 
     public APICompleter(HashMap<String, ShellCommand> commands) {
         this.commands = commands;
-        context = ShellContext.getInstance();
     }
 
 
@@ -31,7 +28,7 @@ public class APICompleter implements Completer {
 
         SortedSet<String> strings = new TreeSet<>();
         for (Map.Entry<String, ShellCommand> command : commands.entrySet()) {
-            if (command.getValue().isPlatform() == context.isLoggedOnPlatform()) {
+            if (command.getValue().isActive()) {
                 strings.add(command.getKey());
             }
         }
@@ -46,7 +43,6 @@ public class APICompleter implements Completer {
                 candidates.add(match);
             }
         }
-
         return candidates.isEmpty() ? -1 : 0;
     }
 }

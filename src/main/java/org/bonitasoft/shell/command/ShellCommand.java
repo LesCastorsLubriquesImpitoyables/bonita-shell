@@ -22,6 +22,8 @@ public abstract class ShellCommand {
 
     public abstract String getName();
 
+    public abstract String getDescription();
+
     /**
      * @param args    arguments to execute the command
      * @param context a context given by the shell
@@ -65,7 +67,7 @@ public abstract class ShellCommand {
         return null;
     }
 
-    public boolean isPlatform() {
+    public boolean isActive() {
         return false;
     }
 }
