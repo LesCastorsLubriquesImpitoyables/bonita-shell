@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * An utility class to parse arguments for the {@link CommandArgumentsCompleter}
- * 
+ *
  * @author Baptiste Mesta
  */
 public class ArgumentParser {
@@ -44,12 +44,12 @@ public class ArgumentParser {
     private String previousArgument;
 
     /**
-     * 
+     *
      */
     public ArgumentParser(final String string) {
         original = string;
-        final List<String> list = new ArrayList<String>(Arrays.asList(string.split("(\\s)+")));
-        if (" ".equals(original.substring(original.length() - 1, original.length()))) {
+        final List<String> list = new ArrayList<>(Arrays.asList(string.split("(\\s)+")));
+        if (!original.isEmpty() && " ".equals(original.substring(original.length() - 1, original.length()))) {
             completed = true;
         }
         if (list.size() > 0) {
@@ -57,10 +57,10 @@ public class ArgumentParser {
             if (list.size() > 1) {
                 arguments = list.subList(1, list.size());
             } else {
-                arguments = new ArrayList<String>();
+                arguments = new ArrayList<>();
             }
         } else {
-            arguments = new ArrayList<String>();
+            arguments = new ArrayList<>();
         }
         if (arguments.size() > 0) {
             firstArgument = arguments.get(0);
@@ -90,7 +90,7 @@ public class ArgumentParser {
         return arguments.size() - 1;
     }
 
-    public boolean isLastArgumentCompleted(){
+    public boolean isLastArgumentCompleted() {
         return completed;
     }
 

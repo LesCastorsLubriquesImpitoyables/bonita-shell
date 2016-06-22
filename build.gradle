@@ -7,15 +7,8 @@ version = '7.3.0.beta-03'
 
 description = """Bonita Shell"""
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-
-mainClassName = "org.bonitasoft.shell.BonitaShell"
-
 repositories {
     maven { url "http://repositories.rd.lan/maven/releases/" }
-    maven { url "http://repositories.rd.lan/maven/maintenance.snapshots/" }
 }
 dependencies {
     compile group: 'com.bonitasoft.engine', name: 'bonita-client-sp', version: '7.3.0.beta-03'
@@ -26,3 +19,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
 }
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+mainClassName = "org.bonitasoft.shell.BonitaShell"
+

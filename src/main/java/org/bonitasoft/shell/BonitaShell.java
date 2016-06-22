@@ -19,6 +19,7 @@ public class BonitaShell {
             System.out.println("No initializer class found in config.properties file, property name is " + SHELL_INITIALIZER);
             return;
         }
+        
         Class<?> initializerClass = Class.forName(initializerClassName);
         Constructor<?> constructor = initializerClass.getConstructor(Properties.class);
         final Shell shell = new Shell((ShellInitializer) constructor.newInstance(config));
