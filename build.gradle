@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'application'
 
 group = 'org.bonitasoft.tools'
-version = '7.3.0.beta-03'
+version = '7.3.0.RC2'
 
 description = """Bonita Shell"""
 
@@ -11,8 +11,8 @@ repositories {
     maven { url "http://repositories.rd.lan/maven/releases/" }
 }
 dependencies {
-    compile group: 'com.bonitasoft.engine', name: 'bonita-client-sp', version: '7.3.0.beta-03'
-    compile group: 'com.bonitasoft.engine', name: 'bonita-global-javadoc', version: '7.3.0.beta-03', classifier: 'javadoc'
+    compile group: 'com.bonitasoft.engine', name: 'bonita-client-sp', version: version
+    compile group: 'com.bonitasoft.engine', name: 'bonita-global-javadoc', version: version, classifier: 'javadoc'
     compile group: 'com.google.code.javaparser', name: 'javaparser', version: '1.0.8'
     compile group: 'jline', name: 'jline', version: '2.13'
     compile group: 'org.jsoup', name: 'jsoup', version: '1.6.1'
