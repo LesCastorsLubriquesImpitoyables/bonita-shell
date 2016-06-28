@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (C) 2014 BonitaSoft S.A.
  * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This program is free software: you can redistribute it and/or modify
@@ -12,18 +11,16 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.bonitasoft.shell;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import jline.console.ConsoleReader;
 
 import org.bonitasoft.engine.api.ApiAccessType;
 import org.bonitasoft.engine.util.APITypeManager;
@@ -32,6 +29,9 @@ import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.ShellCommand;
 import org.bonitasoft.shell.completer.CommandArgumentsCompleter;
 import org.bonitasoft.shell.completer.reflect.ReflectCandidateListCompletionHandler;
+
+import jline.console.ConsoleReader;
+import jline.console.history.FileHistory;
 
 /**
  * A basic shell
@@ -59,22 +59,20 @@ public class Shell {
         printWelcomeMessage();
         initializer.initialize();
         final List<ShellCommand> commandList = initializer.getShellCommands();
-        commands = new HashMap<String, ShellCommand>();
+        commands = new HashMap<>();
         for (final ShellCommand shellCommand : commandList) {
             commands.put(shellCommand.getName(), shellCommand);
         }
         helpCommand = new HelpCommand(commands);
-            commands.put(helpCommand.getName(), helpCommand);
+        commands.put(helpCommand.getName(), helpCommand);
         PrintColor.init();
-        HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put("application.name","bonita");
-        parameters.put("server.url","http://localhost:8080");
-        parameters.put("org.bonitasoft.engine.api-type.parameters","server.url,application.name");
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("application.name", "bonita");
+        parameters.put("server.url", "http://localhost:8080");
+        parameters.put("org.bonitasoft.engine.api-type.parameters", "server.url,application.name");
         APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, parameters);
 
-
     }
-
 
     /**
      * called by {@link Shell} when the shell is exited
@@ -92,7 +90,7 @@ public class Shell {
 
         reader.setCompletionHandler(new ReflectCandidateListCompletionHandler());
         reader.addCompleter(commandArgumentsCompleter);
-
+        reader.setHistory(new FileHistory(new File(".history")));
 
         String line;
         while ((line = reader.readLine("\n" + getPrompt())) != null) {
@@ -141,7 +139,7 @@ public class Shell {
             final String string = asList.get(i);
             asList.set(i, string.replaceAll("%SPACE%", " "));
         }
-        return new ArrayList<String>(asList);
+        return new ArrayList<>(asList);
     }
 
     protected String getPrompt() {
