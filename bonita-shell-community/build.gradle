@@ -4,6 +4,6 @@ dependencies {
     compile group: 'org.bonitasoft.engine', name: 'bonita-client', version: version
     compile group: 'org.bonitasoft.engine', name: 'bonita-client', version: version, classifier: 'javadoc'
     compile group: 'org.bonitasoft.engine', name: 'bonita-common', version: version, classifier: 'javadoc'
-    compile group: 'org.bonitasoft.tools', name: 'bonita-shell-common', version: version
+    compile project(':bonita-shell-common')
 }
 mainClassName = "org.bonitasoft.shell.BonitaShell"

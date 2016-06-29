@@ -3,10 +3,8 @@ package org.bonitasoft.shell;
 import org.bonitasoft.engine.bpm.BaseElement;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
-import org.bonitasoft.engine.job.FailedJob;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.completer.type.BaseElementTypeCompleter;
-import org.bonitasoft.shell.completer.type.FailedJobTypeCompleter;
 import org.bonitasoft.shell.completer.type.ProcessDefinitionTypeCompleter;
 import org.bonitasoft.shell.completer.type.ProcessDeploymentInfoTypeCompleter;
 import org.bonitasoft.shell.completer.type.SearchResultTypeCompleter;
@@ -24,12 +22,11 @@ public class BonitaShellFactorySubscription extends BonitaShellFactory {
         TypeCompleters.addCompleter(SearchResult.class, new SearchResultTypeCompleter());
         TypeCompleters.addCompleter(ProcessDeploymentInfo.class, new ProcessDeploymentInfoTypeCompleter());
         TypeCompleters.addCompleter(BaseElement.class, new BaseElementTypeCompleter());
-        TypeCompleters.addCompleter(FailedJob.class, new FailedJobTypeCompleter());
         return shell;
     }
 
     @Override
     public ShellContext getShellContext() {
-        return SubscriptionShellContext.getInstance();
+        return CommunityShellContext.getInstance();
     }
 }

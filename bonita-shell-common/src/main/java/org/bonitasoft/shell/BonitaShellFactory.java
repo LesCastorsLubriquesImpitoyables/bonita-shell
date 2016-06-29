@@ -56,7 +56,6 @@ public abstract class BonitaShellFactory implements ShellFactory {
         shell.setShellContext(getShellContext());
         shell.setCommands(commandsMap);
         shell.setHelpCommand(helpCommand);
-
         return shell;
     }
 

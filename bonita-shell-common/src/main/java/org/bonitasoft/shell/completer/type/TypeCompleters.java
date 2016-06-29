@@ -67,6 +67,10 @@ public class TypeCompleters {
         return null;
     }
 
+    public static void addCompleter(Class<?> type, TypeHandler<?> typeHandler) {
+        completers.put(type, typeHandler);
+    }
+
     private static List<Class<?>> getSuperClasses(Class<?> aClass) {
         ArrayList<Class<?>> superClasses = new ArrayList<>();
         List<? extends Class<?>> interfaces = Arrays.asList(aClass.getInterfaces());
