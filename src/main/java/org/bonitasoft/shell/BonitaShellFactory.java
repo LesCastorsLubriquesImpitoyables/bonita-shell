@@ -15,15 +15,11 @@
 
 package org.bonitasoft.shell;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
 
-import org.bonitasoft.engine.api.ApiAccessType;
 import org.bonitasoft.engine.util.APITypeManager;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.HelpCommand;
@@ -37,34 +33,12 @@ import org.bonitasoft.shell.completer.reflect.ReflectCommandFactory;
  */
 public class BonitaShellFactory implements ShellFactory {
 
-    private Properties config;
     private List<ShellCommand> commands;
-
-    public BonitaShellFactory(Properties config) {
-        this.config = config;
-    }
-
-    public void initialize() throws Exception {
-        commands = new ArrayList<>();
-        commands.add(new LoginCommand());
-        commands.add(new LogoutCommand());
-        commands.addAll(new ReflectCommandFactory().createTenantCommands(getCommaSeparatedValues("API.tenant.classes")));
-        commands.addAll(new ReflectCommandFactory().createPlatformCommands(getCommaSeparatedValues("API.platform.classes")));
-        initConnectionProperties();
-        login();
-        PrintColor.enable(Boolean.valueOf(config.getProperty("shell.color")));
-
-    }
-
-    private List<String> getCommaSeparatedValues(String key) {
-        String apiClassesAsString = config.getProperty(key);
-        String[] apiClasses = apiClassesAsString.replaceAll(" ", "").split(",");
-        return Arrays.asList(apiClasses);
-    }
+    private ShellConfiguration shellConfiguration;
 
     private void login() {
         ShellContext instance = ShellContext.getInstance();
-        String username = config.getProperty("username");
+        String username = shellConfiguration.getDefaultUsername();
         if (username != null) {
             System.out.println("Enter password for " + username);
             Scanner s = new Scanner(System.in);
@@ -77,17 +51,13 @@ public class BonitaShellFactory implements ShellFactory {
         }
     }
 
-    private void initConnectionProperties() throws IOException {
-        HashMap<String, String> map = new HashMap<>();
-        for (final String name : config.stringPropertyNames()) {
-            map.put(name, config.getProperty(name));
-        }
-        APITypeManager.setAPITypeAndParams(ApiAccessType.valueOf(config.getProperty("org.bonitasoft.engine.api-type")), map);
-    }
-
     @Override
     public Shell createShell() throws Exception {
-        initialize();
+        commands = new ArrayList<>();
+        commands.add(new LoginCommand());
+        commands.add(new LogoutCommand());
+        commands.addAll(new ReflectCommandFactory().createTenantCommands(shellConfiguration.getTenantAPIClassNames()));
+        commands.addAll(new ReflectCommandFactory().createPlatformCommands(shellConfiguration.getPlatformAPIClassNames()));
         HashMap<String, ShellCommand> commandsMap = new HashMap<>();
         for (final ShellCommand shellCommand : commands) {
             commandsMap.put(shellCommand.getName(), shellCommand);
@@ -96,14 +66,19 @@ public class BonitaShellFactory implements ShellFactory {
         commandsMap.put(helpCommand.getName(), helpCommand);
 
         PrintColor.init();
-        HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("application.name", "bonita");
-        parameters.put("server.url", "http://localhost:8080");
-        parameters.put("org.bonitasoft.engine.api-type.parameters", "server.url,application.name");
-        APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, parameters);
+        PrintColor.enable(shellConfiguration.isColorActivated());
+        APITypeManager.setAPITypeAndParams(shellConfiguration.getApiAccessType(), shellConfiguration.getConnectionParameters());
         Shell shell = new Shell();
+        shell.setConfiguration(shellConfiguration);
         shell.setCommands(commandsMap);
         shell.setHelpCommand(helpCommand);
+        login();
+
         return shell;
+    }
+
+    @Override
+    public void setConfiguration(ShellConfiguration shellConfiguration) {
+        this.shellConfiguration = shellConfiguration;
     }
 }

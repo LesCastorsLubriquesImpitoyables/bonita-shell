@@ -74,21 +74,10 @@ public class ReflectMethodCommand extends ShellCommand {
         }
         while (iterator.hasNext()) {
             final Method method = iterator.next();
-            try {
-                if (method != null) {
-                    final Object result = invokeMethod(api, method, parameters);
-                    PrintColor.printGreenBold(printResult(result));
-                    return true;
-                }
-            } catch (Throwable e) {
-                if (!iterator.hasNext()) {
-                    if (e instanceof InvocationTargetException) {
-                        final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
-                        e = invocationTargetException.getTargetException();
-                    }
-                    PrintColor.printRedBold(e.getMessage());
-
-                }
+            if (method != null) {
+                final Object result = invokeMethod(api, method, parameters);
+                PrintColor.printGreenBold(printResult(result));
+                return true;
             }
         }
         return false;
@@ -195,7 +184,7 @@ public class ReflectMethodCommand extends ShellCommand {
 
     @Override
     public List<BonitaCompleter> getCompleters() {
-        return Collections.<BonitaCompleter>singletonList(new ReflectMethodArgumentCompleter(this));
+        return Collections.<BonitaCompleter> singletonList(new ReflectMethodArgumentCompleter(this));
     }
 
     String getMethodHelp() {

@@ -23,4 +23,6 @@ package org.bonitasoft.shell;
 public interface ShellFactory {
 
     Shell createShell() throws Exception;
+
+    void setConfiguration(ShellConfiguration shellConfiguration);
 }

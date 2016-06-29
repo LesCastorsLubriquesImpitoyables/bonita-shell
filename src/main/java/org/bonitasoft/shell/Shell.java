@@ -17,6 +17,7 @@ package org.bonitasoft.shell;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class Shell {
     private HashMap<String, ShellCommand> commands;
 
     private HelpCommand helpCommand;
+    private ShellConfiguration shellConfiguration;
 
     void setCommands(HashMap<String, ShellCommand> commands) {
         this.commands = commands;
@@ -83,8 +85,17 @@ public class Shell {
                 if (clientCommand.validate(args)) {
                     try {
                         clientCommand.execute(args, getContext());
-                    } catch (final Exception e) {
-                        e.printStackTrace();
+                    } catch (Throwable e) {
+
+                        if (e instanceof InvocationTargetException) {
+                            final InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                            e = invocationTargetException.getTargetException();
+                        }
+                        PrintColor.printRedBold(e.getMessage());
+                        if (shellConfiguration.isDebug()) {
+                            e.printStackTrace();
+                        }
+
                     }
                 } else {
                     clientCommand.printHelp();
@@ -147,5 +158,10 @@ public class Shell {
         System.out.println("");
         System.out.println("");
         System.out.println("");
+    }
+
+    public void setConfiguration(ShellConfiguration shellConfiguration) {
+
+        this.shellConfiguration = shellConfiguration;
     }
 }

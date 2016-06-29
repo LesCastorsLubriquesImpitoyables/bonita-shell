@@ -1,28 +1,18 @@
 package org.bonitasoft.shell;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.Properties;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class BonitaShell {
 
-    private static final String SHELL_FACTORY = "shell.factory";
-
     public static void main(final String[] args) throws Exception {
-        CommandLine line = parseOptions(args);
-        Properties config = loadProperties();
-        addCommandLineOptions(line, config);
-        ShellFactory shellFactory = createFactory(config);
+        ShellConfiguration shellConfiguration = new ShellConfiguration();
+        parseOptions(shellConfiguration, args);
+        ShellFactory shellFactory = createFactory(shellConfiguration);
         runShell(shellFactory);
     }
 
@@ -32,26 +22,25 @@ public class BonitaShell {
         shell.destroy();
     }
 
-    private static ShellFactory createFactory(Properties config)
+    private static ShellFactory createFactory(ShellConfiguration shellConfiguration)
             throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException {
-        String initializerClassName = config.getProperty(SHELL_FACTORY);
+        String initializerClassName = shellConfiguration.getShellFactoryClassName();
         if (initializerClassName == null) {
-            System.out.println("No initializer class found in config.properties file, property name is " + SHELL_FACTORY);
+            System.out.println("No initializer class found in config.properties file, property name is " + ShellConfiguration.SHELL_FACTORY);
             System.exit(1);
         }
 
         Class<?> initializerClass = Class.forName(initializerClassName);
-        Constructor<?> constructor = initializerClass.getConstructor(Properties.class);
-        return (ShellFactory) constructor.newInstance(config);
+        ShellFactory shellFactory = (ShellFactory) initializerClass.newInstance();
+        shellFactory.setConfiguration(shellConfiguration);
+        return shellFactory;
     }
 
-    private static CommandLine parseOptions(String[] args) {
+    private static void parseOptions(ShellConfiguration shellConfiguration, String[] args) {
         // create the command line parser
         CommandLineParser parser = new DefaultParser();
         // create the Options
-        Options options = new Options();
-        options.addOption(new Option("h", "help", false, "print this message"));
-        options.addOption(new Option("d", "debug", false, "print debugging information"));
+        Options options = shellConfiguration.getOptions();
 
         // parse the command line arguments
         CommandLine line = null;
@@ -67,7 +56,7 @@ public class BonitaShell {
             printHelp(options);
             System.exit(0);
         }
-        return line;
+        shellConfiguration.addCommandLineArguments(line);
     }
 
     private static void printHelp(Options options) {
@@ -76,21 +65,6 @@ public class BonitaShell {
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("bonita-shell", header, options, footer, true);
-    }
-
-    private static void addCommandLineOptions(CommandLine line, Properties config) {
-        if (line.hasOption("debug")) {
-            System.out.println("debug mode enabled");
-            config.setProperty("debug", "true");
-        }
-    }
-
-    private static Properties loadProperties() throws IOException {
-        Properties config = new Properties();
-        FileInputStream inStream = new FileInputStream(new File("../config.properties"));
-        config.load(inStream);
-        inStream.close();
-        return config;
     }
 
 }
