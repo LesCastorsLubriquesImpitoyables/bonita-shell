@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bonitasoft.engine.api.ApiAccessType;
-import org.bonitasoft.engine.util.APITypeManager;
 import org.bonitasoft.shell.color.PrintColor;
 import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.ShellCommand;
@@ -49,29 +47,12 @@ public class Shell {
 
     private HelpCommand helpCommand;
 
-    private ShellInitializer initializer;
-
-    public Shell(ShellInitializer initializer) {
-        this.initializer = initializer;
+    void setCommands(HashMap<String, ShellCommand> commands) {
+        this.commands = commands;
     }
 
-    public void init() throws Exception {
-        printWelcomeMessage();
-        initializer.initialize();
-        final List<ShellCommand> commandList = initializer.getShellCommands();
-        commands = new HashMap<>();
-        for (final ShellCommand shellCommand : commandList) {
-            commands.put(shellCommand.getName(), shellCommand);
-        }
-        helpCommand = new HelpCommand(commands);
-        commands.put(helpCommand.getName(), helpCommand);
-        PrintColor.init();
-        HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("application.name", "bonita");
-        parameters.put("server.url", "http://localhost:8080");
-        parameters.put("org.bonitasoft.engine.api-type.parameters", "server.url,application.name");
-        APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, parameters);
-
+    void setHelpCommand(HelpCommand helpCommand) {
+        this.helpCommand = helpCommand;
     }
 
     /**
@@ -84,6 +65,7 @@ public class Shell {
     }
 
     public void run(final InputStream in, final OutputStream out) throws Exception {
+        printWelcomeMessage();
         final ConsoleReader reader = new ConsoleReader(in, out);
         reader.setBellEnabled(false);
         final CommandArgumentsCompleter commandArgumentsCompleter = new CommandArgumentsCompleter(commands);

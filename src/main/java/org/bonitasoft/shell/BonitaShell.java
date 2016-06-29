@@ -16,34 +16,33 @@ import org.apache.commons.cli.ParseException;
 
 public class BonitaShell {
 
-    private static final String SHELL_INITIALIZER = "shell.initializer";
+    private static final String SHELL_FACTORY = "shell.factory";
 
     public static void main(final String[] args) throws Exception {
         CommandLine line = parseOptions(args);
         Properties config = loadProperties();
         addCommandLineOptions(line, config);
-        ShellInitializer initializer = createInitializer(config);
-        runShell(initializer);
+        ShellFactory shellFactory = createFactory(config);
+        runShell(shellFactory);
     }
 
-    private static void runShell(ShellInitializer initializer) throws Exception {
-        final Shell shell = new Shell(initializer);
-        shell.init();
+    private static void runShell(ShellFactory shellFactory) throws Exception {
+        final Shell shell = shellFactory.createShell();
         shell.run(System.in, System.out);
         shell.destroy();
     }
 
-    private static ShellInitializer createInitializer(Properties config)
+    private static ShellFactory createFactory(Properties config)
             throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException {
-        String initializerClassName = config.getProperty(SHELL_INITIALIZER);
+        String initializerClassName = config.getProperty(SHELL_FACTORY);
         if (initializerClassName == null) {
-            System.out.println("No initializer class found in config.properties file, property name is " + SHELL_INITIALIZER);
+            System.out.println("No initializer class found in config.properties file, property name is " + SHELL_FACTORY);
             System.exit(1);
         }
 
         Class<?> initializerClass = Class.forName(initializerClassName);
         Constructor<?> constructor = initializerClass.getConstructor(Properties.class);
-        return (ShellInitializer) constructor.newInstance(config);
+        return (ShellFactory) constructor.newInstance(config);
     }
 
     private static CommandLine parseOptions(String[] args) {

@@ -26,6 +26,7 @@ import java.util.Scanner;
 import org.bonitasoft.engine.api.ApiAccessType;
 import org.bonitasoft.engine.util.APITypeManager;
 import org.bonitasoft.shell.color.PrintColor;
+import org.bonitasoft.shell.command.HelpCommand;
 import org.bonitasoft.shell.command.LoginCommand;
 import org.bonitasoft.shell.command.LogoutCommand;
 import org.bonitasoft.shell.command.ShellCommand;
@@ -34,21 +35,15 @@ import org.bonitasoft.shell.completer.reflect.ReflectCommandFactory;
 /**
  * @author Baptiste Mesta
  */
-public class BonitaShellInitializer implements ShellInitializer {
+public class BonitaShellFactory implements ShellFactory {
 
     private Properties config;
     private List<ShellCommand> commands;
 
-    public BonitaShellInitializer(Properties config) {
+    public BonitaShellFactory(Properties config) {
         this.config = config;
     }
 
-    @Override
-    public List<ShellCommand> getShellCommands() throws Exception {
-        return commands;
-    }
-
-    @Override
     public void initialize() throws Exception {
         commands = new ArrayList<>();
         commands.add(new LoginCommand());
@@ -88,5 +83,27 @@ public class BonitaShellInitializer implements ShellInitializer {
             map.put(name, config.getProperty(name));
         }
         APITypeManager.setAPITypeAndParams(ApiAccessType.valueOf(config.getProperty("org.bonitasoft.engine.api-type")), map);
+    }
+
+    @Override
+    public Shell createShell() throws Exception {
+        initialize();
+        HashMap<String, ShellCommand> commandsMap = new HashMap<>();
+        for (final ShellCommand shellCommand : commands) {
+            commandsMap.put(shellCommand.getName(), shellCommand);
+        }
+        HelpCommand helpCommand = new HelpCommand(commandsMap);
+        commandsMap.put(helpCommand.getName(), helpCommand);
+
+        PrintColor.init();
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("application.name", "bonita");
+        parameters.put("server.url", "http://localhost:8080");
+        parameters.put("org.bonitasoft.engine.api-type.parameters", "server.url,application.name");
+        APITypeManager.setAPITypeAndParams(ApiAccessType.HTTP, parameters);
+        Shell shell = new Shell();
+        shell.setCommands(commandsMap);
+        shell.setHelpCommand(helpCommand);
+        return shell;
     }
 }
