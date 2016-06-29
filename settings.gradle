@@ -1,1 +1,5 @@
 rootProject.name = 'bonita-shell'
+
+include 'bonita-shell-common'
+include 'bonita-shell-community'
+include 'bonita-shell-subscription'

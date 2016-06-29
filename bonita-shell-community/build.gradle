@@ -1,0 +1,9 @@
+apply plugin: 'application'
+
+dependencies {
+    compile group: 'org.bonitasoft.engine', name: 'bonita-client', version: version
+    compile group: 'org.bonitasoft.engine', name: 'bonita-client', version: version, classifier: 'javadoc'
+    compile group: 'org.bonitasoft.engine', name: 'bonita-common', version: version, classifier: 'javadoc'
+    compile group: 'org.bonitasoft.tools', name: 'bonita-shell-common', version: version
+}
+mainClassName = "org.bonitasoft.shell.BonitaShell"
