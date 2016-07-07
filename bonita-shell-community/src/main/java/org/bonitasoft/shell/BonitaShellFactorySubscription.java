@@ -1,10 +1,12 @@
 package org.bonitasoft.shell;
 
 import org.bonitasoft.engine.bpm.BaseElement;
+import org.bonitasoft.engine.bpm.bar.BusinessArchive;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.ProcessDeploymentInfo;
 import org.bonitasoft.engine.search.SearchResult;
 import org.bonitasoft.shell.completer.type.BaseElementTypeCompleter;
+import org.bonitasoft.shell.completer.type.BusinessArchiveTypeCompleter;
 import org.bonitasoft.shell.completer.type.ProcessDefinitionTypeCompleter;
 import org.bonitasoft.shell.completer.type.ProcessDeploymentInfoTypeCompleter;
 import org.bonitasoft.shell.completer.type.SearchResultTypeCompleter;
@@ -22,6 +24,7 @@ public class BonitaShellFactorySubscription extends BonitaShellFactory {
         TypeCompleters.addCompleter(SearchResult.class, new SearchResultTypeCompleter());
         TypeCompleters.addCompleter(ProcessDeploymentInfo.class, new ProcessDeploymentInfoTypeCompleter());
         TypeCompleters.addCompleter(BaseElement.class, new BaseElementTypeCompleter());
+        TypeCompleters.addCompleter(BusinessArchive.class, new BusinessArchiveTypeCompleter());
         return shell;
     }
 
