@@ -16,7 +16,6 @@ public class TypeCompleters {
 
     static {
         completers = new HashMap<>();
-        //        completers.put(BusinessArchive.class, new BusinessArchiveTypeCompleter());
         completers.put(byte[].class, new ByteArrayCompleter());
         completers.put(boolean.class, new BooleanCompleter());
         completers.put(Boolean.class, new BooleanCompleter());
@@ -28,13 +27,8 @@ public class TypeCompleters {
         completers.put(float.class, new FloatCompleter());
         completers.put(Integer.class, new IntegerCompleter());
         completers.put(int.class, new IntegerCompleter());
-        //        completers.put(SearchOptions.class, new SearchOptionsCompleter());
         completers.put(List.class, new ListTypeCompleter());
-        //        completers.put(ProcessDefinition.class, new ProcessDefinitionTypeCompleter());
-        //        completers.put(SearchResult.class, new SearchResultTypeCompleter());
-        //        completers.put(ProcessDeploymentInfo.class, new ProcessDeploymentInfoTypeCompleter());
-        //        completers.put(BaseElement.class, new BaseElementTypeCompleter());
-        //        completers.put(FailedJob.class, new FailedJobTypeCompleter());
+        completers.put(String.class, new StringCompleter());
     }
 
     public static TypeHandler<?> getCompleter(Class<?> type) {
@@ -60,11 +54,8 @@ public class TypeCompleters {
             }
         }
 
-        //in last case we return the string completer
-        if (type.contains(String.class)) {
-            return new StringCompleter();
-        }
-        return null;
+        //in last case we return the groovy completer
+        return new GroovyCompleter();
     }
 
     public static void addCompleter(Class<?> type, TypeHandler<?> typeHandler) {

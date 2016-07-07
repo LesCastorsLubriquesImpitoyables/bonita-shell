@@ -36,7 +36,7 @@ import org.bonitasoft.shell.completer.type.TypeHandler;
  */
 public class ReflectMethodCommand extends ShellCommand {
 
-    private ShellContext shellContext;
+  close proje  private ShellContext shellContext;
     private final String methodName;
     private final Map<Method, MethodHelp> methodHelpMap;
     private final String apiName;
@@ -72,7 +72,7 @@ public class ReflectMethodCommand extends ShellCommand {
         final List<Method> methods = getMethods(parameters);
         final Iterator<Method> iterator = methods.iterator();
         if (methods.isEmpty()) {
-            PrintColor.printRedBold("No matching method found, try with other arguments");
+            PrintColor.printRedBold("No matching method found for arguments " + parameters + ", try with other arguments");
             printHelp();
         }
         while (iterator.hasNext()) {
@@ -179,10 +179,7 @@ public class ReflectMethodCommand extends ShellCommand {
             return true;
         }
         final TypeHandler<?> completer = TypeCompleters.getCompleter(parameterType);
-        if (completer == null) {
-            return false;
-        }
-        return completer.isCastableTo(parameterAsString);
+        return completer != null && completer.isCastableTo(parameterAsString);
     }
 
     @Override

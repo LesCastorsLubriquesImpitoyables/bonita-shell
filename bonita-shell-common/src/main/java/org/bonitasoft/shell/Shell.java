@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -125,8 +124,33 @@ public class Shell {
      * @return
      */
     protected List<String> parse(final String line) {
-        final List<String> asList = Arrays.asList(line.trim()
-                .replaceAll("\\\\ ", "%SPACE%").split("(\\s)+"));
+        final List<String> asList = new ArrayList<>();
+        String current = "";
+        boolean isGroovy = false;
+
+        for (char c : line.replaceAll("\\\\ ", "%SPACE%").trim().toCharArray()) {
+            if (c == ' ' && !isGroovy) {
+                if (current != null) {
+                    asList.add(current);
+                }
+                current = null;
+                continue;
+            }
+            if (c == '$') {
+                isGroovy = true;
+            }
+            if (c == '}' && isGroovy) {
+                isGroovy = false;
+            }
+            if (current == null) {
+                current = "";
+            }
+            current += c;
+        }
+        if (current != null) {
+            asList.add(current);
+        }
+
         for (int i = 0; i < asList.size(); i++) {
             final String string = asList.get(i);
             asList.set(i, string.replaceAll("%SPACE%", " "));
