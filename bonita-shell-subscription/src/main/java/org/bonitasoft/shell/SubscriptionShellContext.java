@@ -19,23 +19,14 @@ package org.bonitasoft.shell;
 import java.util.Map;
 
 import org.bonitasoft.engine.api.ApiAccessType;
-import org.bonitasoft.engine.api.CommandAPI;
 import org.bonitasoft.engine.api.PlatformLoginAPI;
-import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.util.APITypeManager;
 
-import com.bonitasoft.engine.api.IdentityAPI;
 import com.bonitasoft.engine.api.LoginAPI;
-import com.bonitasoft.engine.api.MonitoringAPI;
-import com.bonitasoft.engine.api.PageAPI;
 import com.bonitasoft.engine.api.PlatformAPIAccessor;
-import com.bonitasoft.engine.api.ProcessAPI;
-import com.bonitasoft.engine.api.ProfileAPI;
-import com.bonitasoft.engine.api.ReportingAPI;
 import com.bonitasoft.engine.api.TenantAPIAccessor;
-import com.bonitasoft.engine.api.ThemeAPI;
 
 /**
  * @author Baptiste Mesta
@@ -100,65 +91,35 @@ public class SubscriptionShellContext implements ShellContext {
         platformSession = platformLoginAPI.login(username, password);
     }
 
-    public IdentityAPI getIdentityAPI() throws BonitaException {
-        return TenantAPIAccessor.getIdentityAPI(session);
-
-    }
-
-    public ProcessAPI getProcessAPI() throws BonitaException {
-        return TenantAPIAccessor.getProcessAPI(session);
-    }
-
-    public ProfileAPI getProfileAPI() throws BonitaException {
-        return TenantAPIAccessor.getProfileAPI(session);
-    }
-
-    public PageAPI getPageAPI() throws BonitaException {
-        return TenantAPIAccessor.getPageAPI(session);
-    }
-
-    public MonitoringAPI getMonitoringAPI() throws BonitaException {
-        return TenantAPIAccessor.getMonitoringAPI(session);
-    }
-
-    public ThemeAPI getThemeAPI() throws BonitaException {
-        return TenantAPIAccessor.getThemeAPI(session);
-    }
-
-    public ReportingAPI getReportingAPI() throws BonitaException {
-        return TenantAPIAccessor.getReportingAPI(session);
-    }
-
-    public CommandAPI getCommandAPI() throws BonitaException {
-        return TenantAPIAccessor.getCommandAPI(session);
-    }
-
     @Override
     @Deprecated
     public Object getApi(final String apiName) throws Exception {
         if (apiName.equals("ProcessAPI")) {
-            return getProcessAPI();
+            return TenantAPIAccessor.getProcessAPI(session);
         }
         if (apiName.equals("IdentityAPI")) {
-            return getIdentityAPI();
+            return TenantAPIAccessor.getIdentityAPI(session);
         }
         if (apiName.equals("ProfileAPI")) {
-            return getProfileAPI();
+            return TenantAPIAccessor.getProfileAPI(session);
         }
         if (apiName.equals("PageAPI")) {
-            return getPageAPI();
+            return TenantAPIAccessor.getCustomPageAPI(session);
         }
         if (apiName.equals("MonitoringAPI")) {
-            return getMonitoringAPI();
+            return TenantAPIAccessor.getMonitoringAPI(session);
         }
         if (apiName.equals("ThemeAPI")) {
-            return getThemeAPI();
+            return TenantAPIAccessor.getThemeAPI(session);
         }
         if (apiName.equals("ReportingAPI")) {
-            return getReportingAPI();
+            return TenantAPIAccessor.getReportingAPI(session);
         }
         if (apiName.equals("CommandAPI")) {
-            return getCommandAPI();
+            return TenantAPIAccessor.getCommandAPI(session);
+        }
+        if (apiName.equals("PlatformCommandAPI")) {
+            return PlatformAPIAccessor.getPlatformCommandAPI(platformSession);
         }
         if (apiName.equals("PlatformAPI")) {
             return PlatformAPIAccessor.getPlatformAPI(platformSession);

@@ -19,17 +19,10 @@ package org.bonitasoft.shell;
 import java.util.Map;
 
 import org.bonitasoft.engine.api.ApiAccessType;
-import org.bonitasoft.engine.api.CommandAPI;
-import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.LoginAPI;
-import org.bonitasoft.engine.api.PageAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.PlatformLoginAPI;
-import org.bonitasoft.engine.api.ProcessAPI;
-import org.bonitasoft.engine.api.ProfileAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
-import org.bonitasoft.engine.api.ThemeAPI;
-import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
 import org.bonitasoft.engine.util.APITypeManager;
@@ -97,54 +90,33 @@ public class CommunityShellContext implements ShellContext {
         platformSession = platformLoginAPI.login(username, password);
     }
 
-    public IdentityAPI getIdentityAPI() throws BonitaException {
-        return TenantAPIAccessor.getIdentityAPI(session);
-
-    }
-
-    public ProcessAPI getProcessAPI() throws BonitaException {
-        return TenantAPIAccessor.getProcessAPI(session);
-    }
-
-    public ProfileAPI getProfileAPI() throws BonitaException {
-        return TenantAPIAccessor.getProfileAPI(session);
-    }
-
-    public PageAPI getPageAPI() throws BonitaException {
-        return TenantAPIAccessor.getCustomPageAPI(session);
-    }
-
-    public ThemeAPI getThemeAPI() throws BonitaException {
-        return TenantAPIAccessor.getThemeAPI(session);
-    }
-
-    public CommandAPI getCommandAPI() throws BonitaException {
-        return TenantAPIAccessor.getCommandAPI(session);
-    }
-
     @Override
     @Deprecated
     public Object getApi(final String apiName) throws Exception {
         if (apiName.equals("ProcessAPI")) {
-            return getProcessAPI();
+            return TenantAPIAccessor.getProcessAPI(session);
         }
         if (apiName.equals("IdentityAPI")) {
-            return getIdentityAPI();
+            return TenantAPIAccessor.getIdentityAPI(session);
+
         }
         if (apiName.equals("ProfileAPI")) {
-            return getProfileAPI();
+            return TenantAPIAccessor.getProfileAPI(session);
         }
         if (apiName.equals("PageAPI")) {
-            return getPageAPI();
+            return TenantAPIAccessor.getCustomPageAPI(session);
         }
         if (apiName.equals("ThemeAPI")) {
-            return getThemeAPI();
+            return TenantAPIAccessor.getThemeAPI(session);
         }
         if (apiName.equals("CommandAPI")) {
-            return getCommandAPI();
+            return TenantAPIAccessor.getCommandAPI(session);
         }
         if (apiName.equals("PlatformAPI")) {
             return PlatformAPIAccessor.getPlatformAPI(platformSession);
+        }
+        if (apiName.equals("PlatformCommandAPI")) {
+            return PlatformAPIAccessor.getPlatformCommandAPI(platformSession);
         }
         throw new IllegalArgumentException("Unknown API: " + apiName);
     }
